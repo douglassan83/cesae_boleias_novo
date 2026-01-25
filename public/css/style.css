@@ -1,0 +1,137 @@
+/* CESAE BOLEIAS ROXO */
+body {
+    background: linear-gradient(to bottom, #cad4dc 0%, #cdd5db 100%) !important;
+    font-family: 'Inter', sans-serif !important;
+    color: #2D3748 !important;
+}
+
+/* NAVBAR ROXO */
+.navbar {
+    background: linear-gradient(135deg, #7326aa 0%, #7324aa 100%) !important;
+    box-shadow: 0 4px 20px rgba(107, 70, 193, 0.4) !important;
+}
+.nav-link {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+
+.nav-link:hover {
+    color: #EDE9FE !important;
+    background: rgba(255,255,255,0.2) !important;
+    border-radius: 8px !important;
+}
+
+
+/* Navbar: alerta da conta ADMIN + Logout LADO A LADO */
+nav .flex.items-center.justify-end.gap-4 .alert,
+nav form {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin-right: 15px !important;
+}
+
+nav .flex.items-center.justify-end.gap-4 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+nav .alert {
+    margin: 0 !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 600;
+
+}
+
+
+/* Ícone MAIOR - Sobrescreve Bootstrap */
+.bi-person-circle {
+    font-size: 2rem !important;  /* 32px - MÉDIO */
+    /* ou 2.5rem = 40px GRANDE */
+    /* ou 3rem = 48px ENORME */
+}
+
+/* Cor opcional */
+.bi-person-circle {
+    color: white !important;
+}
+
+
+
+
+
+/* BOTÕES BOOTSTRAP */
+.btn-primary {
+    background: linear-gradient(135deg, #6B46C1, #8B5CF6) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+.btn-primary:hover {
+    background: #553C9A !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-secondary {
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+.btn-danger {
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+
+
+
+/*  ------------ HERO ------------------*/
+
+.hero-container {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    margin: 0 !important;
+}
+
+.hero-image {
+    width: 100% !important;
+    height: 100vh !important;
+    object-fit: cover !important;
+}
+
+.hero-overlay {
+    z-index: 10;
+    max-width: 800px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.hero-overlay h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.2;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* CARDS */
+.card {
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(107, 70, 193, 0.15) !important;
+    border-left: 4px solid #6B46C1 !important;
+}
