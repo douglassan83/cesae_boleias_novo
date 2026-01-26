@@ -12,7 +12,7 @@
 <p class="text-danger"> Erro de email</p>
         @enderror
 
-        <button type="submit" class="btn btn-primary">Recuperar Pass</button>
+        <button type="submit" class="btn btn-primary">Recuperar Password</button>
 
     </form>
 

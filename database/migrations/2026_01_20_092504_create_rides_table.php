@@ -1,8 +1,4 @@
 <?php
-// ========================================
-// MIGRATION RIDES CESAE BOLEIAS
-// Tabela boleias com nullable/defaults
-// ========================================
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

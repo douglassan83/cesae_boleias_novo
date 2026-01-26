@@ -1,7 +1,3 @@
-{{-- ========================================
-   BLADE: all_rides.blade.php - ÚNICA LISTA BOLEIAS CESAE
-   MOTORISTA: vê só suas | PASSAGEIRO: filtrado origem | ADMIN: tudo
-   ======================================== --}}
 @extends('layouts.main_layout')
 @section('content')
 
@@ -11,7 +7,7 @@
         {{-- TÍTULO DINÂMICO POR ROLE --}}
         <h3 class="mb-4">
             @if (auth()->user()->role == 'driver')
-                Minhas Boleias (Motorista)
+                Minhas Boleias oferecidas (Motorista)
             @elseif(auth()->user()->role == 'passenger')
                 Procurar Boleias (Passageiro) ({{ auth()->user()->pickup_location ?? 'Preencha perfil!' }})
             @else
@@ -19,14 +15,38 @@
             @endif
         </h3>
 
-        {{-- BOTÃO CRIAR: SÓ DRIVER e ADMIN --}}
+        {{-- BOTões --}}
+
         @auth
-            @if (auth()->user()->role != 'passenger')
+            {{-- ADMIN: vê 3 botões --}}
+            @if (auth()->user()->role == 'admin')
                 <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
                     Adicionar Boleia
                 </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Pedidos Recebidos
+                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
+                    Pedidos Solicitados
+                </a>
+
+                {{-- DRIVER: 2 botões --}}
+            @elseif (auth()->user()->role == 'driver')
+                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
+                    Adicionar Boleia
+                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Pedidos Recebidos
+                </a>
+
+                {{-- PASSENGER: 1 botão --}}
+            @elseif (auth()->user()->role == 'passenger')
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Pedidos Solicitados
+                </a>
             @endif
         @endauth
+
 
         {{-- ALERTAS --}}
         @if (session('success'))
@@ -94,10 +114,7 @@
                                             title="Detalhes">
                                             <i class="fas fa-eye"></i> Ver
                                         </a>
-                                        <a href="{{ route('rides.delete', $ride->id) }}" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Cancelar esta boleia?')">
-                                            <i class="fas fa-times"></i> Cancelar
-                                        </a>
+
 
                                         {{-- PASSAGEIRO: PEDIR BOLEIA --}}
                                     @elseif(auth()->user()->role == 'passenger')
@@ -106,15 +123,11 @@
                                                 <span class="badge bg-warning text-dark">
                                                     Pedido Enviado com sucesso
                                                 </span>
-                                            @else
-                                                {{-- FORM PEDIR --}}
-                                                <form method="POST" action="{{ route('rides.request') }}" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="ride_id" value="{{ $ride->id }}">
-                                                    <button type="submit" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-handshake"></i> Pedir boleia
-                                                    </button>
-                                                </form>
+                                                {{-- PASSAGEIRO: apenas ver detalhes e pedir dentro da boleia --}}
+                                            @elseif(auth()->user()->role == 'passenger')
+                                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
+                                                    Ver
+                                                </a>
                                             @endif
                                         @else
                                             <span class="badge bg-secondary">Indisponível</span>

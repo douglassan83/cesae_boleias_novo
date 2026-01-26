@@ -44,16 +44,19 @@
         <div class="mt-3">
             @auth
                 @if (auth()->id() == $ride->driver_id)
-                    <a href="{{ route('rides.edit', $ride) }}" class="btn btn-warning"> <i class="fas fa-edit"></i> Editar</a>
-                    <a href="{{ route('rides.delete', $ride->id) }}" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Cancelar esta boleia?')">
-                        <i class="fas fa-times"></i> Cancelar
-                    </a>
+                    <form action="{{ route('rides.delete', $ride->id) }}" method="POST" class="d-inline"
+                        onsubmit="return confirm('Excluir esta boleia?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-times"></i> Excluir
+                        </button>
+                    </form>
                 @endif
 
                 {{-- PASSAGEIRO: só se disponível --}}
                 @if (auth()->id() != $ride->driver_id && ($ride->available_seats ?? 0) > 0 && $ride->status == 'active')
-                    <form method="POST" action="#" class="d-inline">
+                    <form method="POST" action="{{ route('rides.request') }}" class="d-inline">
                         @csrf
                         <input type="hidden" name="ride_id" value="{{ $ride->id }}">
                         <button type="submit" class="btn btn-primary ">Pedir Boleia </button>

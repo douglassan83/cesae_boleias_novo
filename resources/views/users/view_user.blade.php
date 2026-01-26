@@ -94,7 +94,7 @@
 
                     {{-- BOTÕES --}}
                     <button type="submit" class="btn btn-primary me-2">Actualizar</button>
-                    <a href="{{ route('users.all') }}" class="btn btn-secondary">Lista Users</a>
+            
                 </form>
             </div>
         </div>

@@ -49,22 +49,13 @@
 
 
                     @auth {{-- SÓ LOGADOS --}}
-                        {{-- MENU 2: Oferecer (rides.add) - Motorista --}}
-                        @if (Auth::user()->role == 'user-motorista')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('rides.add') }}">Oferecer boleia</a>
-                            </li>
-                        @endif
+                       
 
                         {{-- MENU 3: Todas Boleias (rides.all) - Todos logados --}}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('rides.all') }}">Todas as boleias</a>
+                            <a class="nav-link" href="{{ route('rides.all') }}">Boleias/Dashboard</a>
                         </li>
 
-                        {{-- MENU 4: Minhas Boleias (rides.my_requests) - Todos logados --}}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('rides.my_requests') }}">Minhas boleias</a>
-                        </li>
 
                         {{-- MENU 5: Admin (users.all?) --}}
                         @if (Auth::user()->role == 'admin')

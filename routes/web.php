@@ -49,7 +49,7 @@ Route::get('/addUsers', [UserController::class, 'addUser'])->name('users.add');
 Route::post('/store-user', [UserController::class, 'storeUser'])->name('users.store');
 
 //roto para atualizar o usuario
-Route::put('/updateUser',[UserController::class, 'updateUser'])->name('users.update');
+Route::put('/updateUser', [UserController::class, 'updateUser'])->name('users.update');
 
 //rota que apaga o user
 Route::get('/deleteuser/{id}', [UserController::class, 'deleteUser'])->name('users.delete');
@@ -69,18 +69,30 @@ Route::middleware('auth')->group(function () {
 
 
 // rotas pedidos das boleias
-Route::middleware('auth')->group(function() {
+Route::middleware('auth')->group(function () {
 
+    // pedir boleia
     Route::post('/rides/request', [RideController::class, 'requestRide'])->name('rides.request');
+
+    // visualizar as boleias pedidas ou oferecidas
     Route::get('/rides/requests', [RideController::class, 'myRequests'])->name('rides.my_requests');
 
-   // Info da boleia(ver) + Cancelar(excluir de all_rides e mudar status na my_requests(minhas boleias))
+    // Info da boleia(ver) + Cancelar(excluir de all_rides e mudar status na my_requests(minhas boleias))
     Route::get('/rides/{ride}', [RideController::class, 'viewRide'])->name('rides.view');
     Route::delete('/rides/{ride}', [RideController::class, 'deleteRide'])->name('rides.delete');
 
-    // + EDITAR (futuro)
+    // + EDITAR boleia oferecida
     Route::get('/rides/{ride}/edit', [RideController::class, 'editRide'])->name('rides.edit');
     Route::put('/rides/{ride}', [RideController::class, 'updateRide'])->name('rides.update');
+
+    // aceitar boleia / rejeitar pedido (sempre com ID numérico do pedido)
+Route::post('/ride-requests/{id}/accept', [RideController::class, 'acceptRequest'])
+    ->name('ride_requests.accept');
+
+  //  rejeitar pedido
+
+Route::post('/ride-requests/{id}/reject', [RideController::class, 'rejectRequest'])
+    ->name('ride_requests.reject');
 
 
 });

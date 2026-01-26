@@ -16,7 +16,7 @@ class RideRequest extends Model
         'status'
     ];
 
-    protected $casts = [ 
+    protected $casts = [
         'status' => 'string'
     ];
 
