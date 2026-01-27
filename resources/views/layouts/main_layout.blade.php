@@ -40,23 +40,43 @@
 
                 {{-- LINKS CENTRAIS --}}
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
+
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
                     </li>
+
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Como Funciona</a>
+                        <a class="nav-link" href="/como-funciona">Como Funciona</a>
                     </li>
+
+                    @auth
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('rides.all') }}">Dashboard</a>
+                        </li>
+
+                        @if (Auth::user()->role === 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.all') }}">
+                                    Área de Administração
+                                </a>
+                            </li>
+                        @endif
+                    @endauth
+
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Contactos</a>
+                        <a class="nav-link" href="/contactos">Contactos</a>
                     </li>
+
                 </ul>
+
 
                 {{-- USER AREA --}}
                 <ul class="navbar-nav user-area">
                     @auth
                         <li class="nav-item dropdown user-dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
-                                data-bs-toggle="dropdown">
+                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown"
+                                role="button" aria-expanded="false">
+
 
                                 {{-- AVATAR --}}
                                 <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/nophoto.png') }}"
@@ -71,10 +91,12 @@
                                 </li>
 
                                 <li>
-                                    <a href="{{ route('users.view', Auth::id()) }}" class="dropdown-item">
-                                        Perfil
+                                    <a href="{{ route('users.view', Auth::id()) }}" class="dropdown-item dropdown-link">
+                                        <span>Perfil</span>
+                                        <span class="dropdown-arrow">›</span>
                                     </a>
                                 </li>
+
 
                                 <li>
                                     <hr class="dropdown-divider">
@@ -101,16 +123,16 @@
                             <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
                                 <li>
                                     <a href="{{ route('login') }}" class="dropdown-item dropdown-link">
-    <span>Iniciar Sessão</span>
-    <span class="dropdown-arrow">›</span>
-</a>
+                                        <span>Iniciar Sessão</span>
+                                        <span class="dropdown-arrow">›</span>
+                                    </a>
 
                                 </li>
                                 <li>
                                     <a href="{{ route('users.add') }}" class="dropdown-item dropdown-link">
-    <span>Criar Conta</span>
-    <span class="dropdown-arrow">›</span>
-</a>
+                                        <span>Criar Conta</span>
+                                        <span class="dropdown-arrow">›</span>
+                                    </a>
 
                                 </li>
                             </ul>
