@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+
 </head>
 
 <body>
@@ -42,17 +43,25 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/"  >Home</a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="/como-funciona">Como Funciona</a>
                     </li>
 
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contactos">Contactos</a>
+                    </li>
                     @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('rides.all') }}">Dashboard</a>
                         </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-main">
 
                         @if (Auth::user()->role === 'admin')
                             <li class="nav-item">
@@ -60,15 +69,16 @@
                                     Área de Administração
                                 </a>
                             </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">
+                                    Olá, {{ Auth::user()->name }}
+                                </a>
+                            </li>
                         @endif
+
                     @endauth
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/contactos">Contactos</a>
-                    </li>
-
                 </ul>
-
 
                 {{-- USER AREA --}}
                 <ul class="navbar-nav user-area">
@@ -148,8 +158,10 @@
     <!-- CONTEÚDO -->
     <main class="main-content">
         <div class="container">
+
             @yield('content')
         </div>
+        
     </main>
 
     <!-- FOOTER -->

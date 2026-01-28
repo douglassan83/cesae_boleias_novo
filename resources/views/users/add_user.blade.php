@@ -40,8 +40,8 @@
                     <label>Tipo</label>
                     <select name="role" class="form-control">
                         <option value="admin">Admin</option>
-                        <option value="user-passageiro">Passageiro</option>
-                        <option value="user-motorista">Motorista</option>
+                        <option value="passenger">Passageiro</option>
+                        <option value="driver">Motorista</option>
 
                     </select>
                 </div>
@@ -53,8 +53,8 @@
                 <label>Objetivo</label>
                 <select name="role" class="form-control">
                     <option value="" disabled selected>Selecione o que você deseja</option>
-                    <option value="user-passageiro">Preciso de boleia</option>
-                    <option value="user-motorista">Quero oferecer boleia</option>
+                    <option value="passenger">Preciso de boleia</option>
+                    <option value="driver">Quero oferecer boleia</option>
                 </select>
             </div>
         @endguest
