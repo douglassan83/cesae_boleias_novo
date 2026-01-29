@@ -140,7 +140,7 @@
                                                 </span>
                                             @else
                                                 <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
-                                                    Pedir boleia
+                                                   Ver boleia
                                                 </a>
                                             @endif
                                         @else

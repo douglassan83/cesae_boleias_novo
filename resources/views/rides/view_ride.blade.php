@@ -74,6 +74,12 @@
             @auth
                 {{-- MOTORISTA --}}
                 @if (auth()->id() === $ride->driver_id)
+                    {{-- EDITAR --}}
+                    <a href="{{ route('rides.edit', $ride->id) }}" class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+
+                    {{-- Excluir --}}
                     <form action="{{ route('rides.delete', $ride->id) }}" method="POST" class="d-inline"
                         onsubmit="return confirm('Excluir esta boleia?')">
                         @csrf

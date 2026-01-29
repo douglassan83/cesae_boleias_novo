@@ -12,7 +12,7 @@ class RideController extends Controller
     // Passa título para blade (iniciante: compact() = variáveis para view)
     public function addRide()
     {
-        
+
         $pageTitle = 'Criar Boleia CESAE';
         return view('rides.add_ride', compact('pageTitle'));
     }
