@@ -1,8 +1,3 @@
-{{-- ========================================
-   MINHAS BOLEIAS / PEDIDOS CESAE
-   Passageiro: pedidos que fiz
-   Motorista: pedidos que recebi
-   ======================================== --}}
 @extends('layouts.main_layout')
 
 @section('content')
@@ -34,15 +29,12 @@
                     <th>Status pedido</th>
                     <th>Pedido</th>
 
-
                 </tr>
             </thead>
             <tbody>
                 @forelse($requests as $request)
                     <tr>
                         <td>{{ $request->id }}</td>
-
-
 
                         <td>{{ $request->ride->driver->name ?? 'N/A' }}</td>
                         <td>{{ $request->passenger->name ?? 'N/A' }}</td>
@@ -54,7 +46,6 @@
                             -
                             {{ \Carbon\Carbon::parse($request->ride->departure_time)->format('H:i') ?? 'N/A' }}
                         </td>
-
 
                         <td>
                             <span
@@ -80,9 +71,19 @@
                                     🎥 Entrar no Teams
                                 </a>
                             @endif
+
+                            {{-- ========================================================= --}}
+                            {{-- ADICIONADO: Mostrar dados do passageiro ao motorista --}}
+                            {{-- ========================================================= --}}
+                            @if (auth()->user()->role === 'driver' && $request->status === 'accepted')
+                                <div class="mt-2 p-2 border rounded bg-light">
+                                    <strong>Passageiro:</strong> {{ $request->passenger->name }} <br>
+                                    <strong>Email:</strong> {{ $request->passenger->email }} <br>
+                                    <strong>Telefone:</strong> {{ $request->passenger->phone ?? 'Não disponível' }} <br>
+                                </div>
+                            @endif
+                            {{-- ========================================================= --}}
                         </td>
-
-
 
                         <td>
                             @if (auth()->user()->role === 'driver' && $request->status === 'pending' && $request->ride->driver_id === auth()->id())
