@@ -48,8 +48,14 @@ class UserController extends Controller
 
     public function allUsers()
     {
-        $users = DB::table('users')->get();
-        return view('users.all_users', compact('users'));
+        // Bloqueia acesso se não for admin
+    if (!auth()->check() || auth()->user()->role !== 'admin') {
+        abort(403, 'Acesso negado.');
+    }
+
+    $users = DB::table('users')->get();
+
+    return view('users.all_users', compact('users'));
     }
 
     public function viewUser($id)
@@ -92,7 +98,7 @@ class UserController extends Controller
             'name' => $request->name,
             'whatsapp_phone' => $request->whatsapp_phone,
             'pickup_location' => $request->pickup_location,
-            'bio' => $request->bio,          
+            'bio' => $request->bio,
             'photo' => $photo,
             'updated_at' => now(),
         ]);
