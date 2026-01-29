@@ -52,6 +52,7 @@
                         {{ $ride->status === 'active' ? 'Ativa' : ucfirst($ride->status) }}
                     </span>
                 </p>
+
                 @if (auth()->check() && $pedido)
                     <hr>
 
@@ -85,44 +86,27 @@
                         @csrf
                         @method('DELETE')
 
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Excluir
-                        </button>
-                    </form>
+                {{-- ========================================================= --}}
+                {{-- ADICIONADO: Mostrar dados do motorista quando pedido ACEITE --}}
+                {{-- ========================================================= --}}
+                @if (auth()->check() && $pedido && $pedido->status === 'accepted')
+                    <hr>
 
-                    {{-- PASSAGEIRO --}}
-                @else
-                    @php
-                        $pedido = \App\Models\RideRequest::where('ride_id', $ride->id)
-                            ->where('passenger_id', auth()->id())
-                            ->whereIn('status', ['pending', 'accepted'])
-                            ->first();
-                    @endphp
+                    <h5 class="text-success">✔ O motorista aceitou o seu pedido!</h5>
 
-                    {{-- Pedido pendente --}}
-                    @if ($pedido && $pedido->status === 'pending')
-                        <button class="btn btn-warning btn-sm" disabled>
-                            Aguardando pedido
-                        </button>
+                    <p><strong>Motorista:</strong> {{ $ride->driver->name }}</p>
+                    <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
+                    <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
 
-                        {{-- Ainda não pediu --}}
-                    @elseif (!$pedido && $ride->status === 'active' && ($ride->available_seats ?? 0) > 0)
-                        <form method="POST" action="{{ route('rides.request') }}" class="d-inline">
-                            @csrf
-                            <input type="hidden" name="ride_id" value="{{ $ride->id }}">
-
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                ➕ Pedir Boleia
-                            </button>
-                        </form>
+                    @if ($pedido->teams_link)
+                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success mt-2">
+                            🎥 Entrar no Teams
+                        </a>
                     @endif
                 @endif
-            @endauth
+                {{-- ========================================================= --}}
 
-            <a href="{{ route('rides.all') }}" class="btn btn-secondary btn-sm">
-                ← Voltar
-            </a>
-
+            </div>
         </div>
     </div>
 @endsection
