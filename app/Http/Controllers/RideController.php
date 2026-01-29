@@ -177,7 +177,11 @@ class RideController extends Controller
                 ->get();
 
             $pageTitle = 'Minhas boleias pedidas';
+
+
         }
+
+            // Buscar o pedido
         // MOTORISTA: pedidos recebidos nas boleias dele
         elseif (auth()->user()->role === 'driver') {
             $requests = RideRequest::with(['ride', 'passenger'])
@@ -189,6 +193,7 @@ class RideController extends Controller
 
             $pageTitle = 'Pedidos recebidos nas minhas boleias';
         }
+
         // ADMIN: vê todos
         else {
             $requests = RideRequest::with(['ride', 'passenger', 'ride.driver'])
@@ -200,6 +205,38 @@ class RideController extends Controller
 
         return view('rides.my_requests', compact('requests', 'pageTitle'));
     }
+
+    // PASSAGEIRO: CANCELAR pedido de boleia
+    public function cancelRequest($id)
+{
+    $request = RideRequest::findOrFail($id);
+
+    // Só o passageiro dono pode cancelar
+    if (auth()->id() !== $request->passenger_id) {
+        abort(403);
+    }
+
+    // Buscar a boleia
+    $ride = Ride::findOrFail($request->ride_id);
+
+    // 👉 SE O PEDIDO ESTAVA ACEITE, DEVOLVE O LUGAR
+    if ($request->status === 'accepted') {
+        $ride->available_seats += 1;
+
+        // Se estava cheia, volta a ativa
+        if ($ride->status === 'full') {
+            $ride->status = 'active';
+        }
+
+        $ride->save();
+    }
+
+    // Apagar o pedido
+    $request->delete();
+
+    return back()->with('success', 'Pedido de boleia cancelado.');
+}
+
 
    // MOTORISTA: ACEITAR pedido
 public function acceptRequest($id)
@@ -253,13 +290,13 @@ public function rejectRequest($id)
     $request->save();
 
     return back()->with('info', 'Pedido rejeitado.');
-}
+    }
 
 // MOTORISTA: APAGAR boleia
 public function deleteRide(Ride $ride)
 {
     // Só o dono pode apagar
-    if (auth()->id() !== $ride->driver_id) {
+    if (auth()->id() !== $ride->driver_id ) {
         abort(403);
     }
 
@@ -268,12 +305,5 @@ public function deleteRide(Ride $ride)
     return redirect()
         ->route('rides.all')
         ->with('success', 'Boleia excluída com sucesso.');
-}
-
-
-
-
-
-
-
+    }
 }

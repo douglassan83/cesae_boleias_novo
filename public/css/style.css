@@ -364,3 +364,27 @@ footer hr {
     transform: translateX(4px);
     opacity: 1;
 }
+
+
+/* =========================
+   SCROLL ORIGEM / DESTINO
+   ========================= */
+
+.suggestion-list {
+    position: absolute;
+    top: 100% ;
+    left: 0;
+    width: 100%;
+    max-height: 350px; /* altura do scroll */
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: #fff;
+}
+
+.suggestion-list li {
+    cursor: pointer;
+}
+
+.suggestion-list li:hover {
+    background-color: #f1f1f1;
+}

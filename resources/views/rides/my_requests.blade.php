@@ -24,7 +24,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>#Pedido</th>
+
                     <th>Boleia</th>
                     <th>Motorista</th>
                     <th>Passageiro</th>
@@ -32,7 +32,8 @@
                     <th>Destino</th>
                     <th>Data/Hora</th>
                     <th>Status pedido</th>
-                    <th>Ações</th>
+                    <th>Pedido</th>
+
 
                 </tr>
             </thead>
@@ -41,14 +42,10 @@
                     <tr>
                         <td>{{ $request->id }}</td>
 
-                        {{-- link para ver a boleia --}}
-                        <td>
-                            <a href="{{ route('rides.view', $request->ride->id) }}">
-                                #{{ $request->ride->id }}
-                            </a>
-                        </td>
+
 
                         <td>{{ $request->ride->driver->name ?? 'N/A' }}</td>
+
                         <td>{{ $request->passenger->name ?? 'N/A' }}</td>
 
                         <td>{{ $request->ride->pickup_location ?? 'N/A' }}</td>
@@ -57,8 +54,9 @@
                         <td>
                             {{ optional($request->ride->departure_date)->format('d/m/Y') ?? 'N/A' }}
                             -
-                            {{ $request->ride->departure_time ?? 'N/A' }}
+                            {{ \Carbon\Carbon::parse($request->ride->departure_time)->format('H:i') ?? 'N/A' }}
                         </td>
+
 
                         <td>
                             <span
@@ -69,6 +67,14 @@
                                 {{ ucfirst($request->status) }}
                             </span>
                         </td>
+
+                        {{-- link para ver a boleia --}}
+                        <td>
+                            <a href="{{ route('rides.view', $request->ride->id) }}" class="btn btn-primary btn-sm">
+                                VER
+                            </a>
+                        </td>
+
 
                         <td>
                             @if (auth()->user()->role === 'driver' && $request->status === 'pending' && $request->ride->driver_id === auth()->id())
@@ -94,12 +100,6 @@
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-
-
-
-
-
-
                     </tr>
                 @empty
                     <tr>

@@ -1,6 +1,5 @@
 @extends('layouts.main_layout')
 @section('content')
-
     @php use App\Models\RideRequest; @endphp
 
     <div class="container mt-4">
@@ -64,21 +63,21 @@
             <table class="table table-hover table-striped">
                 <thead class="table-dark">
                     <tr>
-                        <th>id</th>
-                        <th>driver</th>
-                        <th>pickup_location</th>
-                        <th>destination_location</th>
-                        <th>departure_date</th>
-                        <th>departure_time</th>
-                        <th>total_seats</th>
-                        <th>status</th>
+
+                        <th>Motorista</th>
+                        <th>Localização de Partida</th>
+                        <th>Localização de Destino</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Total de Lugares</th>
+                        <th>Status</th>
                         <th>Ações(buttons)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($rides as $ride)
                         <tr> {{-- DB INGLÊS --}}
-                            <td><strong>#{{ $ride->id }}</strong></td>
+                            
                             <td>{{ $ride->driver->name }}</td>
                             <td><strong>{{ $ride->pickup_location }}</strong></td>
                             <td> {{ $ride->destination_location }} </td>
@@ -104,41 +103,62 @@
                                     @default
                                         <span class="badge bg-danger">❌ {{ ucfirst($ride->status) }}</span>
                                 @endswitch
-                            </td>
                             <td>
-
                                 @auth
-                                    {{-- MOTORISTA (dono): VER + CANCELAR --}}
+
+                                    {{-- MOTORISTA (DONO DA BOLEIA) --}}
                                     @if (auth()->id() == $ride->driver_id)
-                                        <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info me-1"
-                                            title="Detalhes">
+                                        <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info me-1">
                                             <i class="fas fa-eye"></i> Ver
                                         </a>
 
+                                        @php
+                                            $pendingCount = \App\Models\RideRequest::where('ride_id', $ride->id)
+                                                ->where('status', 'pending')
+                                                ->count();
+                                        @endphp
 
-                                        {{-- PASSAGEIRO: PEDIR BOLEIA --}}
+                                        @if ($pendingCount > 0)
+                                            <span class="badge bg-warning text-dark">
+                                                🚘 {{ $pendingCount }} Pedido{{ $pendingCount > 1 ? 's' : '' }} de boleia
+                                            </span>
+                                        @endif
+
+                                        {{-- PASSAGEIRO --}}
                                     @elseif(auth()->user()->role == 'passenger')
-                                        @if ($ride->available_seats > 0 && $ride->status == 'active')
-                                            @if (RideRequest::where('ride_id', $ride->id)->where('passenger_id', auth()->id())->exists())
-                                                <span class="badge bg-warning text-dark">
-                                                    Pedido Enviado com sucesso
-                                                </span>
-                                                {{-- PASSAGEIRO: apenas ver detalhes e pedir dentro da boleia --}}
-                                            @elseif(auth()->user()->role == 'passenger')
-                                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
-                                                    Ver
+                                        @if (auth()->id() == $ride->driver_id)
+                                            @php
+                                                $pendingCount = \App\Models\RideRequest::where('ride_id', $ride->id)
+                                                    ->where('status', 'pending')
+                                                    ->count();
+                                            @endphp
+
+                                            <div class="d-flex align-items-center gap-2 flex-nowrap">
+
+                                                {{-- BADGE À FRENTE --}}
+                                                @if ($pendingCount > 0)
+                                                    <span class="badge bg-warning text-dark">
+                                                        🚗 {{ $pendingCount }} Pedido{{ $pendingCount > 1 ? 's' : '' }} de
+                                                        boleia
+                                                    </span>
+                                                @endif
+
+                                                {{-- BOTÃO VER --}}
+                                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info"
+                                                    title="Detalhes">
+                                                    <i class="fas fa-eye"></i> Ver
                                                 </a>
-                                            @endif
-                                        @else
-                                            <span class="badge bg-secondary">Indisponível</span>
+
+                                            </div>
                                         @endif
                                     @endif
                                 @else
-                                    <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">Faça Login p/
-                                        pedir</a>
+                                    <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">
+                                        Faça Login p/ pedir
+                                    </a>
                                 @endauth
-
                             </td>
+
                         </tr>
                         @empty
                             <tr>
@@ -157,5 +177,4 @@
                 </table>
             </div>
         </div>
-
     @endsection

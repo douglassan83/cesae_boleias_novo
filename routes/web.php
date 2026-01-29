@@ -71,6 +71,10 @@ Route::middleware('auth')->group(function () {
 // rotas pedidos das boleias
 Route::middleware('auth')->group(function () {
 
+    // cancelar pedido de boleia
+    Route::delete('/ride-requests/{id}', [RideController::class, 'cancelRequest'])
+        ->name('ride_requests.cancel'); 
+
     // pedir boleia
     Route::post('/rides/request', [RideController::class, 'requestRide'])->name('rides.request');
 
