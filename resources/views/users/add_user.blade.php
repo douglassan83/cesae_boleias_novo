@@ -20,7 +20,7 @@
         </div>
         <div class="mb-3">
             <label>Email CESAE *</label>
-            <input name="email" type="email" class="form-control" placeholder="nome@cesae.pt" required>
+            <input name="email" type="email" class="form-control" placeholder="nome@msft.cesae.pt" required>
             @error('email')
                 <div class="text-danger">{{ $message }}</div>
             @enderror

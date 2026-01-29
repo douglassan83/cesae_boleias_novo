@@ -27,7 +27,7 @@
                 <p><strong>whatsApp_phone:</strong> {{ $user->whatsapp_phone ?? 'Não informado' }}</p>
                 <p><strong>pickup_location:</strong> {{ $user->pickup_location ?? 'Não definido' }}</p>
                 <p><strong>role:</strong>
-                
+
                     @switch($user->role)
                         @case('driver')
                             Motorista
@@ -38,7 +38,7 @@
                         @break
 
                         @default
-                            {{ ucfirst($user->role) }}
+                            {{ ucfirst($user->role) }} {{-- método pra inserir maiuscula na primeira letra --}}
                     @endswitch
                 <p><strong>bio:</strong> {{ $user->bio }}</p>
                 </p>
@@ -98,6 +98,14 @@
                     <button type="submit" class="btn btn-primary me-2">Actualizar</button>
 
                 </form>
+                <br>
+                {{-- mensagem usuário adicionado com sucesso --}}
+    @if (session('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert"">
+            {{ session('message') }}
+        </div>
+    @endif
+    <br>
             </div>
         </div>
     </div>

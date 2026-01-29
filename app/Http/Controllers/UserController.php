@@ -103,7 +103,7 @@ class UserController extends Controller
             'updated_at' => now(),
         ]);
 
-    return redirect()->route('users.all')->with('message', 'Usuário atualizado com sucesso');
+    return redirect()->route('users.view', $request->id)->with('message', 'Usuário atualizado com sucesso');
 }
 
 }
