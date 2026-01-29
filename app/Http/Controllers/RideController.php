@@ -12,9 +12,11 @@ class RideController extends Controller
     // Passa título para blade (iniciante: compact() = variáveis para view)
     public function addRide()
     {
+        
         $pageTitle = 'Criar Boleia CESAE';
         return view('rides.add_ride', compact('pageTitle'));
     }
+
 
     // 2. MOTORISTA: SALVA boleia (valida + cria Ride)
     // Laravel VALIDATE: para se dados errados ( @error blade mostra)
@@ -177,7 +179,11 @@ class RideController extends Controller
                 ->get();
 
             $pageTitle = 'Minhas boleias pedidas';
+
+
         }
+
+            // Buscar o pedido
         // MOTORISTA: pedidos recebidos nas boleias dele
         elseif (auth()->user()->role === 'driver') {
             $requests = RideRequest::with(['ride', 'passenger'])
@@ -189,6 +195,7 @@ class RideController extends Controller
 
             $pageTitle = 'Pedidos recebidos nas minhas boleias';
         }
+
         // ADMIN: vê todos
         else {
             $requests = RideRequest::with(['ride', 'passenger', 'ride.driver'])
@@ -201,14 +208,46 @@ class RideController extends Controller
         return view('rides.my_requests', compact('requests', 'pageTitle'));
     }
 
-   // MOTORISTA: ACEITAR pedido
+    // PASSAGEIRO: CANCELAR pedido de boleia
+    public function cancelRequest($id)
+{
+    $request = RideRequest::findOrFail($id);
+
+    // Só o passageiro dono pode cancelar
+    if (auth()->id() !== $request->passenger_id) {
+        abort(403);
+    }
+
+    // Buscar a boleia
+    $ride = Ride::findOrFail($request->ride_id);
+
+    // 👉 SE O PEDIDO ESTAVA ACEITE, DEVOLVE O LUGAR
+    if ($request->status === 'accepted') {
+        $ride->available_seats += 1;
+
+        // Se estava cheia, volta a ativa
+        if ($ride->status === 'full') {
+            $ride->status = 'active';
+        }
+
+        $ride->save();
+    }
+
+    // Apagar o pedido
+    $request->delete();
+
+    return back()->with('success', 'Pedido de boleia cancelado.');
+}
+
+
+// MOTORISTA: ACEITAR pedido
 public function acceptRequest($id)
 {
     // 1. Buscar o pedido na tabela ride_requests
-    $request = RideRequest::findOrFail($id);
+    $rideRequest = RideRequest::findOrFail($id);
 
     // 2. Buscar a boleia ligada a este pedido
-    $ride = Ride::findOrFail($request->ride_id);
+    $ride = Ride::findOrFail($rideRequest->ride_id);
 
     // 3. Só o motorista dono da boleia pode aceitar
     if (auth()->id() !== $ride->driver_id) {
@@ -221,8 +260,9 @@ public function acceptRequest($id)
     }
 
     // 5. Atualizar pedido para accepted
-    $request->status = 'accepted';
-    $request->save();
+    $rideRequest->status = 'accepted';
+    $rideRequest->teams_link = 'https://teams.microsoft.com/l/meetup-join/XXXX';
+    $rideRequest->save();
 
     // 6. Atualizar lugares disponíveis
     $ride->available_seats = $ride->available_seats - 1;
@@ -234,14 +274,16 @@ public function acceptRequest($id)
     return back()->with('success', 'Pedido aceito com sucesso.');
 }
 
+
+
 // MOTORISTA: REJEITAR pedido
 public function rejectRequest($id)
 {
     // 1. Buscar o pedido
-    $request = RideRequest::findOrFail($id);
+    $rideRequest = RideRequest::findOrFail($id);
 
     // 2. Buscar a boleia
-    $ride = Ride::findOrFail($request->ride_id);
+    $ride = Ride::findOrFail($rideRequest->ride_id);
 
     // 3. Só o motorista dono da boleia pode rejeitar
     if (auth()->id() !== $ride->driver_id) {
@@ -249,17 +291,16 @@ public function rejectRequest($id)
     }
 
     // 4. Atualizar pedido para rejected
-    $request->status = 'rejected';
-    $request->save();
-
+    $rideRequest->status = 'rejected';
+    $rideRequest->save();
     return back()->with('info', 'Pedido rejeitado.');
-}
+    }
 
 // MOTORISTA: APAGAR boleia
 public function deleteRide(Ride $ride)
 {
     // Só o dono pode apagar
-    if (auth()->id() !== $ride->driver_id) {
+    if (auth()->id() !== $ride->driver_id ) {
         abort(403);
     }
 
@@ -268,12 +309,5 @@ public function deleteRide(Ride $ride)
     return redirect()
         ->route('rides.all')
         ->with('success', 'Boleia excluída com sucesso.');
-}
-
-
-
-
-
-
-
+    }
 }

@@ -161,7 +161,7 @@
 
             @yield('content')
         </div>
-        
+
     </main>
 
     <!-- FOOTER -->
@@ -237,8 +237,10 @@
         </div>
 
     </footer>
+    
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-
+    @stack('scripts')
 
 </body>
 
