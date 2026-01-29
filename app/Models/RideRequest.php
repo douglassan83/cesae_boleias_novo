@@ -13,7 +13,8 @@ class RideRequest extends Model
         'ride_id',
         'passenger_id',
         'message',
-        'status'
+        'status',
+        'teams_link',
     ];
 
     protected $casts = [

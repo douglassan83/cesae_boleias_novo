@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
 
     // cancelar pedido de boleia
     Route::delete('/ride-requests/{id}', [RideController::class, 'cancelRequest'])
-        ->name('ride_requests.cancel'); 
+        ->name('ride_requests.cancel');
 
     // pedir boleia
     Route::post('/rides/request', [RideController::class, 'requestRide'])->name('rides.request');
@@ -97,6 +97,8 @@ Route::post('/ride-requests/{id}/accept', [RideController::class, 'acceptRequest
 
 Route::post('/ride-requests/{id}/reject', [RideController::class, 'rejectRequest'])
     ->name('ride_requests.reject');
+
+
 
 
 });

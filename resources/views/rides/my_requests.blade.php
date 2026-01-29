@@ -45,12 +45,10 @@
 
 
                         <td>{{ $request->ride->driver->name ?? 'N/A' }}</td>
-
                         <td>{{ $request->passenger->name ?? 'N/A' }}</td>
-
                         <td>{{ $request->ride->pickup_location ?? 'N/A' }}</td>
                         <td>{{ $request->ride->destination_location ?? 'N/A' }}</td>
-
+                        <td>{{ $request->teams_link ?? 'N/A' }}</td>
                         <td>
                             {{ optional($request->ride->departure_date)->format('d/m/Y') ?? 'N/A' }}
                             -
@@ -70,10 +68,20 @@
 
                         {{-- link para ver a boleia --}}
                         <td>
-                            <a href="{{ route('rides.view', $request->ride->id) }}" class="btn btn-primary btn-sm">
+                            {{-- Botão VER --}}
+                            <a href="{{ route('rides.view', $request->ride->id) }}" class="btn btn-primary btn-sm mb-1">
                                 VER
                             </a>
+
+                            {{-- LINK TEAMS (motorista e passageiro) --}}
+                            @if ($request->status === 'accepted' && $request->teams_link)
+                                <br>
+                                <a href="{{ $request->teams_link }}" target="_blank" class="btn btn-sm btn-success mt-1">
+                                    🎥 Entrar no Teams
+                                </a>
+                            @endif
                         </td>
+
 
 
                         <td>

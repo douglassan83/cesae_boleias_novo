@@ -12,9 +12,11 @@ class RideController extends Controller
     // Passa título para blade (iniciante: compact() = variáveis para view)
     public function addRide()
     {
+        
         $pageTitle = 'Criar Boleia CESAE';
         return view('rides.add_ride', compact('pageTitle'));
     }
+
 
     // 2. MOTORISTA: SALVA boleia (valida + cria Ride)
     // Laravel VALIDATE: para se dados errados ( @error blade mostra)
@@ -238,14 +240,14 @@ class RideController extends Controller
 }
 
 
-   // MOTORISTA: ACEITAR pedido
+// MOTORISTA: ACEITAR pedido
 public function acceptRequest($id)
 {
     // 1. Buscar o pedido na tabela ride_requests
-    $request = RideRequest::findOrFail($id);
+    $rideRequest = RideRequest::findOrFail($id);
 
     // 2. Buscar a boleia ligada a este pedido
-    $ride = Ride::findOrFail($request->ride_id);
+    $ride = Ride::findOrFail($rideRequest->ride_id);
 
     // 3. Só o motorista dono da boleia pode aceitar
     if (auth()->id() !== $ride->driver_id) {
@@ -258,8 +260,9 @@ public function acceptRequest($id)
     }
 
     // 5. Atualizar pedido para accepted
-    $request->status = 'accepted';
-    $request->save();
+    $rideRequest->status = 'accepted';
+    $rideRequest->teams_link = 'https://teams.microsoft.com/l/meetup-join/XXXX';
+    $rideRequest->save();
 
     // 6. Atualizar lugares disponíveis
     $ride->available_seats = $ride->available_seats - 1;
@@ -271,14 +274,16 @@ public function acceptRequest($id)
     return back()->with('success', 'Pedido aceito com sucesso.');
 }
 
+
+
 // MOTORISTA: REJEITAR pedido
 public function rejectRequest($id)
 {
     // 1. Buscar o pedido
-    $request = RideRequest::findOrFail($id);
+    $rideRequest = RideRequest::findOrFail($id);
 
     // 2. Buscar a boleia
-    $ride = Ride::findOrFail($request->ride_id);
+    $ride = Ride::findOrFail($rideRequest->ride_id);
 
     // 3. Só o motorista dono da boleia pode rejeitar
     if (auth()->id() !== $ride->driver_id) {
@@ -286,9 +291,8 @@ public function rejectRequest($id)
     }
 
     // 4. Atualizar pedido para rejected
-    $request->status = 'rejected';
-    $request->save();
-
+    $rideRequest->status = 'rejected';
+    $rideRequest->save();
     return back()->with('info', 'Pedido rejeitado.');
     }
 

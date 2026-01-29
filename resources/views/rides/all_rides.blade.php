@@ -72,12 +72,13 @@
                         <th>Total de Lugares</th>
                         <th>Status</th>
                         <th>Ações(buttons)</th>
+                        <th>Link Teams</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($rides as $ride)
                         <tr> {{-- DB INGLÊS --}}
-                            
+
                             <td>{{ $ride->driver->name }}</td>
                             <td><strong>{{ $ride->pickup_location }}</strong></td>
                             <td> {{ $ride->destination_location }} </td>
@@ -105,13 +106,13 @@
                                 @endswitch
                             <td>
                                 @auth
-
-                                    {{-- MOTORISTA (DONO DA BOLEIA) --}}
-                                    @if (auth()->id() == $ride->driver_id)
+                                    {{-- 1️⃣ MOTORISTA DONO DA BOLEIA --}}
+                                    @if (auth()->id() === $ride->driver_id)
                                         <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info me-1">
-                                            <i class="fas fa-eye"></i> Ver
+                                            Ver
                                         </a>
 
+                                        {{-- contador de pedidos pendentes --}}
                                         @php
                                             $pendingCount = \App\Models\RideRequest::where('ride_id', $ride->id)
                                                 ->where('status', 'pending')
@@ -120,43 +121,39 @@
 
                                         @if ($pendingCount > 0)
                                             <span class="badge bg-warning text-dark">
-                                                🚘 {{ $pendingCount }} Pedido{{ $pendingCount > 1 ? 's' : '' }} de boleia
+                                                📩 {{ $pendingCount }} pedido{{ $pendingCount > 1 ? 's' : '' }}
                                             </span>
                                         @endif
 
-                                        {{-- PASSAGEIRO --}}
-                                    @elseif(auth()->user()->role == 'passenger')
-                                        @if (auth()->id() == $ride->driver_id)
-                                            @php
-                                                $pendingCount = \App\Models\RideRequest::where('ride_id', $ride->id)
-                                                    ->where('status', 'pending')
-                                                    ->count();
-                                            @endphp
+                                        {{-- 2️⃣ PASSAGEIRO --}}
+                                    @elseif (auth()->user()->role === 'passenger')
+                                        @php
+                                            $alreadyRequested = \App\Models\RideRequest::where('ride_id', $ride->id)
+                                                ->where('passenger_id', auth()->id())
+                                                ->exists();
+                                        @endphp
 
-                                            <div class="d-flex align-items-center gap-2 flex-nowrap">
-
-                                                {{-- BADGE À FRENTE --}}
-                                                @if ($pendingCount > 0)
-                                                    <span class="badge bg-warning text-dark">
-                                                        🚗 {{ $pendingCount }} Pedido{{ $pendingCount > 1 ? 's' : '' }} de
-                                                        boleia
-                                                    </span>
-                                                @endif
-
-                                                {{-- BOTÃO VER --}}
-                                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info"
-                                                    title="Detalhes">
-                                                    <i class="fas fa-eye"></i> Ver
+                                        @if ($ride->status === 'active' && $ride->available_seats > 0)
+                                            @if ($alreadyRequested)
+                                                <span class="badge bg-warning text-dark">
+                                                    Pedido enviado com sucesso
+                                                </span>
+                                            @else
+                                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
+                                                    Pedir boleia
                                                 </a>
-
-                                            </div>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-secondary">Indisponível</span>
                                         @endif
                                     @endif
                                 @else
+                                    {{-- 3️⃣ NÃO AUTENTICADO --}}
                                     <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">
-                                        Faça Login p/ pedir
+                                        Faça login para pedir
                                     </a>
                                 @endauth
+
                             </td>
 
                         </tr>
