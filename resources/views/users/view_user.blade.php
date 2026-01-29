@@ -21,11 +21,13 @@
 
 
                 {{-- DADOS DB --}}
+                {{--Botão pedir boleia deve alterar aguardando o aceite do motorista--}}
                 <p><strong>name:</strong> {{ $user->name }}</p>
                 <p><strong>email:</strong> {{ $user->email }}</p>
                 <p><strong>whatsApp_phone:</strong> {{ $user->whatsapp_phone ?? 'Não informado' }}</p>
                 <p><strong>pickup_location:</strong> {{ $user->pickup_location ?? 'Não definido' }}</p>
                 <p><strong>role:</strong>
+                
                     @switch($user->role)
                         @case('driver')
                             Motorista
@@ -94,7 +96,7 @@
 
                     {{-- BOTÕES --}}
                     <button type="submit" class="btn btn-primary me-2">Actualizar</button>
-            
+
                 </form>
             </div>
         </div>
