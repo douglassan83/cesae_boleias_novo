@@ -86,27 +86,28 @@
                         @csrf
                         @method('DELETE')
 
-                {{-- ========================================================= --}}
-                {{-- ADICIONADO: Mostrar dados do motorista quando pedido ACEITE --}}
-                {{-- ========================================================= --}}
-                @if (auth()->check() && $pedido && $pedido->status === 'accepted')
-                    <hr>
+                        {{-- ========================================================= --}}
+                        {{-- ADICIONADO: Mostrar dados do motorista quando pedido ACEITE --}}
+                        {{-- ========================================================= --}}
+                        @if (auth()->check() && $pedido && $pedido->status === 'accepted')
+                            <hr>
 
-                    <h5 class="text-success">✔ O motorista aceitou o seu pedido!</h5>
+                            <h5 class="text-success">✔ O motorista aceitou o seu pedido!</h5>
 
-                    <p><strong>Motorista:</strong> {{ $ride->driver->name }}</p>
-                    <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
-                    <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
+                            <p><strong>Motorista:</strong> {{ $ride->driver->name }}</p>
+                            <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
+                            <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
 
-                    @if ($pedido->teams_link)
-                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success mt-2">
-                            🎥 Entrar no Teams
-                        </a>
-                    @endif
-                @endif
-                {{-- ========================================================= --}}
-
+                            @if ($pedido->teams_link)
+                                <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success mt-2">
+                                    🎥 Entrar no Teams
+                                </a>
+                            @endif
+                        @endif
+                        {{-- ========================================================= --}}
+                    </form>
             </div>
         </div>
     </div>
+
 @endsection
