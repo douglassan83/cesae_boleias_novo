@@ -73,6 +73,10 @@ class RideController extends Controller
     {
         // Carrega relações (iniciante: with() = JOIN otimizado)
         $ride->load('driver');
+        $ride->load([
+        'driver:id,name,email',
+        'rideRequests.passenger:id,name,email'
+    ]);
 
         return view('rides.view_ride', compact('ride'));
     }
