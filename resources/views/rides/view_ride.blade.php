@@ -15,7 +15,6 @@
             @endphp
         @endauth
 
-
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -53,6 +52,7 @@
                     </span>
                 </p>
 
+                {{-- CANCELAR PEDIDO (PASSAGEIRO) --}}
                 @if (auth()->check() && $pedido)
                     <hr>
 
@@ -66,12 +66,28 @@
                         </button>
                     </form>
                 @endif
+
+                {{-- INFO MOTORISTA QUANDO PEDIDO ACEITE / LINK TEAMS --}}
+                @if (auth()->check() && $pedido)
+                    <hr>
+
+                    @if ($pedido->status === 'accepted')
+                        <h5 class="text-success">✔ O motorista aceitou o seu pedido!</h5>
+
+                        <p><strong>Motorista:</strong> {{ $ride->driver->name }}</p>
+                        <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
+                        <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
+                    @elseif ($pedido->teams_link)
+                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success mt-2">
+                            🎥 Entrar no Teams
+                        </a>
+                    @endif
+                @endif
             </div>
         </div>
 
         {{-- BOTÕES --}}
         <div class="mt-3">
-
             @auth
                 {{-- MOTORISTA --}}
                 @if (auth()->id() === $ride->driver_id)
@@ -80,33 +96,18 @@
                         <i class="fas fa-edit"></i> Editar
                     </a>
 
-                    {{-- Excluir --}}
+                    {{-- EXCLUIR --}}
                     <form action="{{ route('rides.delete', $ride->id) }}" method="POST" class="d-inline"
                         onsubmit="return confirm('Excluir esta boleia?')">
                         @csrf
                         @method('DELETE')
 
-                {{-- ========================================================= --}}
-                {{-- ADICIONADO: Mostrar dados do motorista quando pedido ACEITE --}}
-                {{-- ========================================================= --}}
-                @if (auth()->check() && $pedido && $pedido->status === 'accepted')
-                    <hr>
-
-                    <h5 class="text-success">✔ O motorista aceitou o seu pedido!</h5>
-
-                    <p><strong>Motorista:</strong> {{ $ride->driver->name }}</p>
-                    <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
-                    <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
-
-                    @if ($pedido->teams_link)
-                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success mt-2">
-                            🎥 Entrar no Teams
-                        </a>
-                    @endif
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            🗑 Excluir
+                        </button>
+                    </form>
                 @endif
-                {{-- ========================================================= --}}
-
-            </div>
+            @endauth
         </div>
     </div>
 @endsection
