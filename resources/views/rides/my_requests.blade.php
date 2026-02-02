@@ -102,3 +102,5 @@
         <a href="{{ route('rides.all') }}" class="btn btn-secondary">← Voltar às boleias</a>
     </div>
 @endsection
+
+ 
