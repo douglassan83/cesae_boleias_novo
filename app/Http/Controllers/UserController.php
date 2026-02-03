@@ -4,43 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | FORMULÁRIO PARA ADICIONAR USUÁRIO (APENAS ADMIN)
-    |--------------------------------------------------------------------------
-    */
     public function addUser()
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Apenas administradores podem criar usuários.');
-        }
-
         $pageAdmin = 'Admin CESAE';
         return view('users.add_user', compact('pageAdmin'));
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | CRIAR NOVO USUÁRIO
-    |--------------------------------------------------------------------------
-    | Valida email institucional, senha e role.
-    */
     public function storeUser(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Apenas administradores podem criar usuários.');
-        }
+   // VALIDAÇÃO DO EMAIL DO CESAE
 
         $request->validate([
             'name' => 'required|string|max:50',
-
-            // Validação do email institucional CESAE
             'email' => [
                 'required',
                 'email',
@@ -51,130 +32,78 @@ class UserController extends Controller
                     }
                 }
             ],
-
             'password' => 'required|min:8|string|confirmed',
             'role' => 'required|in:admin,driver,passenger'
         ]);
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role
+            'role' => $request->role
         ]);
 
-        return redirect()->route('users.all')
-            ->with('message', 'Conta CESAE criada com sucesso!');
+        return redirect()->route('users.all')->with('message', 'Conta CESAE criada!');
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | LISTAR TODOS OS USUÁRIOS (APENAS ADMIN)
-    |--------------------------------------------------------------------------
-    */
     public function allUsers()
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Acesso negado.');
-        }
-
-        // Agora usando Eloquent (mais limpo e seguro)
-        $users = User::all();
-
-        return view('users.all_users', compact('users'));
+        // Bloqueia acesso se não for admin
+    if (!auth()->check() || auth()->user()->role !== 'admin') {
+        abort(403, 'Acesso negado.');
     }
 
+    $users = DB::table('users')->get();
 
-    /*
-    |--------------------------------------------------------------------------
-    | VER PERFIL DE UM USUÁRIO
-    |--------------------------------------------------------------------------
-    | Admin pode ver qualquer perfil.
-    | Usuário comum só pode ver o próprio.
-    */
+    return view('users.all_users', compact('users'));
+    }
+
     public function viewUser($id)
     {
-        $user = User::findOrFail($id);
-
-        if (auth()->user()->role !== 'admin' && auth()->id() !== $user->id) {
-            abort(403, 'Você não pode ver o perfil de outro usuário.');
-        }
-
+        $user = DB::table('users')->where('id', $id)->first();
         return view('users.view_user', compact('user'));
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | APAGAR USUÁRIO (APENAS ADMIN)
-    |--------------------------------------------------------------------------
-    */
     public function deleteUser($id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Apenas administradores podem apagar usuários.');
-        }
+        // DB::table('tasks')  //
+        //     ->where('user_id', $id)
+        //     ->delete();
 
-        $user = User::findOrFail($id);
+        DB::table('users')  //
+            ->where('id', $id)
+            ->delete();
 
-        // Se quiser impedir admin de apagar a si mesmo:
-        if ($user->id === auth()->id()) {
-            return back()->with('error', 'Você não pode apagar sua própria conta.');
-        }
-
-        $user->delete();
-
-        return back()->with('message', 'Usuário deletado com sucesso.');
+        return back()->with('message', 'Usuário deletado com sucesso');
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | ATUALIZAR PERFIL DO USUÁRIO
-    |--------------------------------------------------------------------------
-    | Usuário comum só pode editar o próprio perfil.
-    | Admin pode editar qualquer perfil.
-    */
     public function updateUser(Request $request)
-    {
-        $user = User::findOrFail($request->id);
+{
+    $request->validate([
+        'name' => 'required|string|max:50',
+        'photo' => 'nullable|image|max:2048',
+        'whatsapp_phone' => 'nullable|string|max:20',
+        'pickup_location' => 'required|string|max:255',
+        'bio' => 'nullable|string|max:1000',
+    ]);
 
-        // Segurança: impedir edição indevida
-        if (auth()->user()->role !== 'admin' && auth()->id() !== $user->id) {
-            abort(403, 'Você não pode editar outro usuário.');
-        }
-
-        $request->validate([
-            'name'            => 'required|string|max:50',
-            'photo'           => 'nullable|image|max:2048',
-            'whatsapp_phone'  => 'nullable|string|max:20',
-            'pickup_location' => 'required|string|max:255',
-            'bio'             => 'nullable|string|max:1000',
-        ]);
-
-        // Upload da foto
-        $photo = $user->photo;
-        if ($request->hasFile('photo')) {
-
-            // Apagar foto antiga se existir
-            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
-                Storage::disk('public')->delete($user->photo);
-            }
-
-            $photo = $request->file('photo')->store('userPhotos', 'public');
-        }
-
-        // Atualizar no banco
-        $user->update([
-            'name'            => $request->name,
-            'whatsapp_phone'  => $request->whatsapp_phone,
-            'pickup_location' => $request->pickup_location,
-            'bio'             => $request->bio,
-            'photo'           => $photo,
-        ]);
-
-        return redirect()->route('users.view', $user->id)
-            ->with('message', 'Usuário atualizado com sucesso.');
+    $photo = $request->photo_path ?? null;
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo')->store('userPhotos', 'public');
     }
+
+    DB::table('users')
+        ->where('id', $request->id)
+        ->update([
+            'name' => $request->name,
+            'whatsapp_phone' => $request->whatsapp_phone,
+            'pickup_location' => $request->pickup_location,
+            'bio' => $request->bio,
+            'photo' => $photo,
+            'updated_at' => now(),
+        ]);
+
+    return redirect()->route('users.view', $request->id)->with('message', 'Usuário atualizado com sucesso');
+}
+
 }

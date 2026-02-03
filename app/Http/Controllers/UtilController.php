@@ -6,22 +6,12 @@ use Illuminate\Http\Request;
 
 class UtilController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | HOME DO PROJETO — CESAE BOLEIAS
-    |--------------------------------------------------------------------------
-    | Esta é a página inicial da plataforma.
-    | Aqui você pode carregar dados dinâmicos, estatísticas, banners etc.
-    | Por enquanto, mantém apenas um exemplo simples.
-    */
-    public function home()
-    {
-        // Exemplo de variável enviada para a view
+    public function home(){
+        //qualquer codigo que eu quiser, funções, variáveis etc.
+        //codigo ficticio que vem de uma consulta
         $surname = 'santos';
 
-        // Renderiza a view resources/views/utils/home.blade.php
-        return view('utils.home', compact('surname'));
+    return view('utils.home',compact('surname'));//caminho para o view nas pastas
     }
 }
-
 

@@ -51,6 +51,11 @@ class Ride extends Model
      */
     public function requests()
     {
+        return $this->hasMany(RideRequest::class);
+    }
+
+    public function rideRequests()
+{
     return $this->hasMany(RideRequest::class, 'ride_id');
 }
 

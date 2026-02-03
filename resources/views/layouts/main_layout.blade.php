@@ -13,15 +13,15 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <!-- CSS Projeto -->
+    <!-- CSS Projeto (DEPOIS do Bootstrap) -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+
 </head>
 
 <body>
 
-    {{-- NAVBAR PRINCIPAL --}}
     <nav class="navbar navbar-expand-lg navbar-cesae">
         <div class="container-fluid">
 
@@ -30,7 +30,7 @@
                 <img src="{{ asset('images/logo-cesae-white.png') }}" alt="CESAE Boleias" class="logo-header">
             </a>
 
-            {{-- TOGGLER MOBILE --}}
+            {{-- TOGGLER --}}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent">
                 <span class="navbar-toggler-icon"></span>
@@ -43,46 +43,63 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/"  >Home</a>
                     </li>
 
-                    {{-- Estas páginas podem ser criadas depois --}}
                     <li class="nav-item">
                         <a class="nav-link" href="/como-funciona">Como Funciona</a>
                     </li>
 
+
+
                     <li class="nav-item">
                         <a class="nav-link" href="/contactos">Contactos</a>
                     </li>
-
                     @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('rides.all') }}">Dashboard</a>
                         </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-main">
+
+                        @if (Auth::user()->role === 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.all') }}">
+                                    Área de Administração
+                                </a>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">
+                                    Olá, {{ Auth::user()->name }}
+                                </a>
+                            </li>
+                        @endif
+
                     @endauth
                 </ul>
 
-                {{-- ÁREA DO USUÁRIO --}}
+                {{-- USER AREA --}}
                 <ul class="navbar-nav user-area">
-
                     @auth
-                        {{-- USUÁRIO LOGADO --}}
                         <li class="nav-item dropdown user-dropdown">
+                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown"
+                                role="button" aria-expanded="false">
 
-                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown">
-                                {{-- FOTO DO PERFIL --}}
+
+                                {{-- AVATAR --}}
                                 <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/nophoto.png') }}"
-                                     alt="{{ Auth::user()->name }}" class="user-avatar">
+                                    alt="Foto de perfil" class="user-avatar">
+
                             </a>
 
+                            {{-- DROPDOWN --}}
                             <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
-
-                                {{-- NOME --}}
                                 <li class="dropdown-header">
                                     {{ Auth::user()->name }}
                                 </li>
 
-                                {{-- PERFIL --}}
                                 <li>
                                     <a href="{{ route('users.view', Auth::id()) }}" class="dropdown-item dropdown-link">
                                         <span>Perfil</span>
@@ -90,19 +107,11 @@
                                     </a>
                                 </li>
 
-                                {{-- ADMIN --}}
-                                @if (Auth::user()->role === 'admin')
-                                    <li>
-                                        <a href="{{ route('users.all') }}" class="dropdown-item dropdown-link">
-                                            <span>Área de Administração</span>
-                                            <span class="dropdown-arrow">›</span>
-                                        </a>
-                                    </li>
-                                @endif
 
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
 
-                                {{-- LOGOUT --}}
                                 <li>
                                     <form action="{{ route('logout') }}" method="post">
                                         @csrf
@@ -113,37 +122,32 @@
                                 </li>
                             </ul>
                         </li>
-
                     @else
-                        {{-- USUÁRIO NÃO AUTENTICADO --}}
                         <li class="nav-item dropdown user-dropdown">
+                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown"
+                                role="button" aria-expanded="false">
 
-                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown">
                                 <img src="{{ asset('images/nophoto.png') }}" alt="Utilizador" class="user-avatar">
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
-
-                                {{-- LOGIN --}}
                                 <li>
                                     <a href="{{ route('login') }}" class="dropdown-item dropdown-link">
                                         <span>Iniciar Sessão</span>
                                         <span class="dropdown-arrow">›</span>
                                     </a>
-                                </li>
 
-                                {{-- REGISTO (ALUNOS CESAE) --}}
+                                </li>
                                 <li>
-                                    <a href="{{ route('register') }}" class="dropdown-item dropdown-link">
+                                    <a href="{{ route('users.add') }}" class="dropdown-item dropdown-link">
                                         <span>Criar Conta</span>
                                         <span class="dropdown-arrow">›</span>
                                     </a>
-                                </li>
 
+                                </li>
                             </ul>
                         </li>
                     @endauth
-
                 </ul>
 
             </div>
@@ -151,19 +155,23 @@
     </nav>
 
 
-    {{-- CONTEÚDO PRINCIPAL --}}
+    <!-- CONTEÚDO -->
     <main class="main-content">
         <div class="container">
+
             @yield('content')
         </div>
+
     </main>
 
-
-    {{-- FOOTER --}}
+    <!-- FOOTER -->
     <footer>
+
         <div class="container">
 
-            {{-- COMUNICAÇÕES --}}
+            {{-- =============================
+            COMUNICAÇÕES
+        ============================== --}}
             <div class="footer-communications">
                 <p>
                     <strong>Comunicações da plataforma CESAE Boleias</strong><br>
@@ -171,12 +179,16 @@
                     e regras de utilização.
                 </p>
 
-                <a href="#" class="footer-button">Receber comunicação</a>
+                <a href="#" class="footer-button">
+                    Receber comunicação
+                </a>
             </div>
 
             <hr>
 
-            {{-- CONTEÚDO PRINCIPAL --}}
+            {{-- =============================
+            CONTEÚDO PRINCIPAL
+        ============================== --}}
             <div class="footer-main">
 
                 {{-- TEXTO + LOGO --}}
@@ -190,11 +202,20 @@
                     </p>
 
                     <div class="footer-socials">
-                        <a href="#" class="social-circle"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-youtube"></i></a>
-                        <a href="#" class="social-circle"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social-circle" aria-label="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="social-circle" aria-label="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="social-circle" aria-label="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        <a href="#" class="social-circle" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
                     </div>
+
                 </div>
 
                 {{-- ILUSTRAÇÃO --}}
@@ -206,16 +227,21 @@
 
             <hr>
 
-            {{-- COPYRIGHT --}}
+            {{-- =============================
+            COPYRIGHT
+        ============================== --}}
             <div class="footer-bottom">
                 © 2026 CESAE Boleias. Todos os direitos reservados.
             </div>
 
         </div>
-    </footer>
 
-    {{-- Scripts adicionais --}}
+    </footer>
+    
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
     @stack('scripts')
 
 </body>
+
 </html>
