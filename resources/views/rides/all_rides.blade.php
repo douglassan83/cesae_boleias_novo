@@ -60,7 +60,7 @@
 
         {{-- TABELA BOLEIAS --}}
         <div class="table-responsive">
-            <table class="table table-hover table-striped ">
+            <table class="table table-hover table-striped">
                 <thead class="table-dark">
                     <tr>
 
@@ -71,7 +71,7 @@
                         <th>Hora</th>
                         <th>Total de Lugares</th>
                         <th>Status</th>
-                        <th>Ações</th>
+                        <th>Ações(buttons)</th>
                         <th>Link Teams</th>
                     </tr>
                 </thead>
@@ -85,7 +85,7 @@
                             <td>{{ date('d/m/Y', strtotime($ride->departure_date)) }}</td>
                             <td>{{ date('H:i', strtotime($ride->departure_time)) }}</td>
                             <td>
-                                <span class="badge bg-primary fs-6">
+                                <span class="badge bg-info fs-6">
                                     {{ $ride->available_seats }} / {{ $ride->total_seats }}
                                 </span>
                             </td>

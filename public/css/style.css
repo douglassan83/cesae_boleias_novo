@@ -1,5 +1,5 @@
 /* =====================================================
-   CESAE BOLEIAS — CSS GLOBAL
+   CESAE BOLEIAS — CSS GLOBAL (BASE DEFINITIVA)
    Paleta oficial (NÃO alterar)
 ===================================================== */
 
@@ -147,42 +147,52 @@ img {
 }
 
 /* =====================================================
-   CONTEÚDO GLOBAL
+   CONTEÚDO
 ===================================================== */
 
-/* ⚠️ Removido padding global para evitar conflitos com a Home */
 .main-content {
-    padding: 0;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
 }
 
-/* =====================================================
-   HERO CESAE (ISOLADO — USO OPCIONAL)
-===================================================== */
 
-/* Mantém o hero CESAE disponível, mas sem forçar layout */
+/* HERO CESAE - ISOLADO SOBRE TUDO */
 .cesae-hero {
-    position: relative;
-    overflow: hidden;
+    height: 100vh !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* Background */
 .cesae-hero-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    object-fit: cover !important;
+    z-index: 1 !important;
 }
 
-/* Texto */
 .cesae-hero-text {
-    position: relative;
-    z-index: 10;
-    max-width: 90%;
-    margin: 0 auto;
-    padding: 1rem;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 90% !important;
+    padding: 1rem !important;
 }
+
+
+
+
+
+
+
 
 /* =====================================================
    FOOTER — FIGMA MATCH
@@ -349,21 +359,23 @@ footer hr {
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+/* Hover elegante */
 .dropdown-link:hover .dropdown-arrow {
     transform: translateX(4px);
     opacity: 1;
 }
 
-/* =====================================================
+
+/* =========================
    SCROLL ORIGEM / DESTINO
-===================================================== */
+   ========================= */
 
 .suggestion-list {
     position: absolute;
-    top: 100%;
+    top: 100% ;
     left: 0;
     width: 100%;
-    max-height: 350px;
+    max-height: 350px; /* altura do scroll */
     overflow-y: auto;
     z-index: 1000;
     background-color: #fff;
