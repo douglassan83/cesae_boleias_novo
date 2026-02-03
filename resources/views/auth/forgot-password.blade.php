@@ -1,6 +1,6 @@
 @extends('layouts.main_layout')
 @section('content')
-
+<section class="container" style="max-width: 520px;">
 <form method="POST" action="{{ route('password.email') }}">
         @csrf
 <div class="mb-3">
@@ -15,5 +15,6 @@
         <button type="submit" class="btn btn-primary">Recuperar Password</button>
 
     </form>
+</section>
 
 @endsection

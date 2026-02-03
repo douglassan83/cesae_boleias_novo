@@ -1,6 +1,7 @@
 @extends('layouts.main_layout')
 @section('content')
 <br>
+<section class="container" style="max-width: 520px;">
 <h3>LOGIN</h3>
 <form method="POST" action="{{ route('login') }}">
         @csrf
@@ -26,5 +27,6 @@
 
         <p>Esqueceu-se da password? clique <a href="{{route('password.request')}}">aqui</a></p>
 </form>
+</section>
 @endsection
 

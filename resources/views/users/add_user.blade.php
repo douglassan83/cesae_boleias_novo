@@ -1,6 +1,7 @@
 @extends('layouts.main_layout')
 @section('content')
     <br>
+    <section class="container" style="max-width: 600px;">
     <h5>REGISTAR</h5>
     {{-- <h5>{{ $pageAdmin ?? 'Registo CESAE' }}</h5>
 <h4>{{ $pageAdmin ?? 'Criar Conta' ? 'Adicionar' : 'Registar' }}</h4> --}}
@@ -62,4 +63,5 @@
         <button type="submit" class="btn btn-primary">{{ $pageAdmin ?? 'Registar' ? 'Adicionar' : '' }}</button>
 
     </form>
+    </section>
 @endsection
