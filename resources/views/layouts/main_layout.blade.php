@@ -13,10 +13,23 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+<<<<<<< HEAD
     <!-- CSS Projeto -->
+=======
+    <!-- CSS Global -->
+>>>>>>> 6825c959b3b7cef6d9f2b4f679a031f24e8c608b
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    <!-- CSS Home (específico da página) -->
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6825c959b3b7cef6d9f2b4f679a031f24e8c608b
 </head>
 
 <body>
@@ -153,11 +166,20 @@
 
     {{-- CONTEÚDO PRINCIPAL --}}
     <main class="main-content">
+<<<<<<< HEAD
         <div class="container">
             @yield('content')
         </div>
     </main>
 
+=======
+        @yield('content')
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+>>>>>>> 6825c959b3b7cef6d9f2b4f679a031f24e8c608b
 
     {{-- FOOTER --}}
     <footer>
@@ -213,6 +235,10 @@
 
         </div>
     </footer>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6825c959b3b7cef6d9f2b4f679a031f24e8c608b
 
     {{-- Scripts adicionais --}}
     @stack('scripts')

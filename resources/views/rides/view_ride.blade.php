@@ -5,14 +5,7 @@
         <br>
         <h3>Boleia #{{ $ride->id }}</h3>
 
-        @auth
-            @php
-                $pedido = \App\Models\RideRequest::where('ride_id', $ride->id)
-                    ->where('passenger_id', auth()->id())
-                    ->whereIn('status', ['pending', 'accepted'])
-                    ->first();
-            @endphp
-        @endauth
+        
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -122,8 +115,8 @@
                                         {{-- TEAMS (SÓ ACEITO) --}}
                                         @if ($request->status === 'accepted' && $request->teams_link)
                                             <a href="{{ $request->teams_link }}" target="_blank"
-                                               class="btn btn-success btn-sm mt-1">
-                                                <i class="fab fa-microsoft"></i> Teams
+                                               class="btn btn-primary btn-sm mt-1">
+                                                <i class="fab fa-microsoft"></i> Enviar msg Teams
                                             </a>
                                         @endif
                                     </div>
@@ -150,8 +143,8 @@
                     <p><strong>Email:</strong> {{ $ride->driver->email }}</p>
                     <p><strong>Telefone:</strong> {{ $ride->driver->phone ?? 'Não disponível' }}</p>
                     @if ($pedido->teams_link)
-                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-success">
-                            🎥 Entrar no Teams
+                        <a href="{{ $pedido->teams_link }}" target="_blank" class="btn btn-primary">
+                            Entrar no Teams
                         </a>
                     @endif
                 </div>
@@ -160,20 +153,23 @@
 
         {{-- BOTÕES MOTORISTA --}}
         <div class="mt-3">
+
+            <a href="{{ route('rides.all') }}" class="btn btn-secondary ms-2">← Voltar</a>
+
             @auth
                 @if (auth()->id() === $ride->driver_id)
                     <a href="{{ route('rides.edit', $ride->id) }}" class="btn btn-warning btn-sm me-2">
-                        <i class="fas fa-edit"></i> Editar
+                        <i class="fas fa-edit"></i> Editar Boleia
                     </a>
                     <form action="{{ route('rides.delete', $ride->id) }}" method="POST" class="d-inline"
                           onsubmit="return confirm('Excluir esta boleia?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">🗑 Excluir</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Excluir Boleia</button>
                     </form>
                 @endif
             @endauth
-            <a href="{{ route('rides.all') }}" class="btn btn-secondary ms-2">← Voltar</a>
+
         </div>
     </div>
 @endsection
