@@ -29,7 +29,7 @@ class Ride extends Model
 
     /**
      * Formata datas automaticamente
-     * $ride->departure_date = Carbon object
+     
      */
     protected $casts = [
         'departure_date' => 'date',
