@@ -22,10 +22,10 @@
                 <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
                     Adicionar Boleia
                 </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                <a href="{{ route('ride_requests.my') }}" class="btn btn-primary mb-3">
                     Pedidos Recebidos
                 </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
+                <a href="{{ route('ride_requests.my') }}" class="btn btn-warning mb-3">
                     Pedidos Solicitados
                 </a>
 
@@ -34,13 +34,13 @@
                 <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
                     Adicionar Boleia
                 </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                <a href="{{ route('ride_requests.my') }}" class="btn btn-primary mb-3">
                     Pedidos Recebidos
                 </a>
 
                 {{-- PASSENGER: 1 botão --}}
             @elseif (auth()->user()->role == 'passenger')
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                <a href="{{ route('ride_requests.my') }}" class="btn btn-primary mb-3">
                     Pedidos Solicitados
                 </a>
             @endif

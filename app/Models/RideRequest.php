@@ -18,7 +18,9 @@ class RideRequest extends Model
     ];
 
     protected $casts = [
-        'status' => 'string'
+        'status' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function ride()
@@ -30,4 +32,10 @@ class RideRequest extends Model
     {
         return $this->belongsTo(User::class, 'passenger_id');
     }
+
+    public function scopePending($query)
+{
+    return $query->where('status', 'pending');
+}
+
 }

@@ -47,7 +47,7 @@
                         @if (!isset($pedido))
                             @if (($ride->available_seats ?? 0) > 0 && $ride->status == 'active')
                                 <div class="mt-3">
-                                    <form method="POST" action="{{ route('rides.request') }}" class="d-inline">
+                                    <form method="POST" action="{{ route('ride_requests.store') }}" class="d-inline">
                                         @csrf
                                         <input type="hidden" name="ride_id" value="{{ $ride->id }}">
                                         <button type="submit" class="btn btn-primary btn-lg">
@@ -76,7 +76,7 @@
         @auth
             @if (auth()->id() === $ride->driver_id)
                 @php
-                    $requests = $ride->rideRequests()->with('passenger:id,name,email')->get();
+                    $requests = $ride->requests()->with('passenger:id,name,email')->get();
                 @endphp
 
                 @if ($requests->count() > 0)

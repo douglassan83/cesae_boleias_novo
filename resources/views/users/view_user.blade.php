@@ -48,10 +48,10 @@
             <div class="col-md-8">
                 <h5>Editar Perfil</h5>
 
-                <form method="POST" action="{{ route('users.update') }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="id" value="{{ $user->id }}">
+                <form method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="id" value="{{ $user->id }}">
 
                     {{-- NOME --}}
                     <div class="mb-3">
