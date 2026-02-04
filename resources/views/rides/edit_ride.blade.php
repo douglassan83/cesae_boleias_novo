@@ -3,10 +3,10 @@
 @section('title', 'Editar Boleia')
 
 @section('content')
-    <div class="container">
+    <div class="container page-section">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
+                <div class="card form-card">
                     <div class="card-header">
                         <h4>Editar Boleia #{{ $ride->id }}</h4>
                     </div>
@@ -92,3 +92,4 @@
         </div>
     </div>
 @endsection
+ 

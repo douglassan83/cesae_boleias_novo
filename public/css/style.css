@@ -1,7 +1,5 @@
-/* =====================================================
-   CESAE BOLEIAS — CSS GLOBAL
-   Paleta oficial (NÃO alterar)
-===================================================== */
+
+
 
 /* ---------- VARIÁVEIS ---------- */
 :root {
@@ -147,42 +145,52 @@ img {
 }
 
 /* =====================================================
-   CONTEÚDO GLOBAL
+   CONTEÚDO
 ===================================================== */
 
-/* ⚠️ Removido padding global para evitar conflitos com a Home */
 .main-content {
-    padding: 0;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
 }
 
-/* =====================================================
-   HERO CESAE (ISOLADO — USO OPCIONAL)
-===================================================== */
 
-/* Mantém o hero CESAE disponível, mas sem forçar layout */
+/* HERO CESAE - ISOLADO SOBRE TUDO */
 .cesae-hero {
-    position: relative;
-    overflow: hidden;
+    height: 100vh !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* Background */
 .cesae-hero-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    object-fit: cover !important;
+    z-index: 1 !important;
 }
 
-/* Texto */
 .cesae-hero-text {
-    position: relative;
-    z-index: 10;
-    max-width: 90%;
-    margin: 0 auto;
-    padding: 1rem;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 90% !important;
+    padding: 1rem !important;
 }
+
+
+
+
+
+
+
 
 /* =====================================================
    FOOTER — FIGMA MATCH
@@ -349,21 +357,23 @@ footer hr {
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+/* Hover elegante */
 .dropdown-link:hover .dropdown-arrow {
     transform: translateX(4px);
     opacity: 1;
 }
 
-/* =====================================================
+
+/* =========================
    SCROLL ORIGEM / DESTINO
-===================================================== */
+   ========================= */
 
 .suggestion-list {
     position: absolute;
-    top: 100%;
+    top: 100% ;
     left: 0;
     width: 100%;
-    max-height: 350px;
+    max-height: 350px; /* altura do scroll */
     overflow-y: auto;
     z-index: 1000;
     background-color: #fff;
@@ -377,3 +387,224 @@ footer hr {
     background-color: #f1f1f1;
 }
 
+
+/* =====================================================
+   HERO SECTION
+===================================================== */
+
+.hero {
+    min-height: 80vh;
+    background-image: url("../images/hero-img.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 4rem 1rem;
+}
+
+.hero-content {
+    max-width: 900px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #3b1b52;
+    margin-bottom: 1.5rem;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: #3b1b52;
+    margin-bottom: 2rem;
+}
+
+.hero-btn {
+    background-color: #3b1b52;
+    color: #3d2973;
+    padding: 0.75rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+
+.cesae-hero-text h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; /* Bold */
+    font-size: 45px;
+    color: #281854;
+}
+
+.cesae-hero-text p {
+    font-family: 'Montserrat', sans-serif;
+    color: #281854; /* outra cor para o texto */
+}
+.cesae-btn {
+    background-color: #281854;
+    color: hsl(0, 0%, 100%);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    padding: 12px 30px;
+    border-radius: 16px;
+    text-decoration: none;
+}
+.cesae-btn:hover {
+    background-color: #7426aa;
+    color: hsl(0, 0%, 100%);
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   RIDE CARD
+========================= */
+
+.ride-card {
+    background-color: #fff;
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ride-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ride-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.ride-card-body {
+    flex-grow: 1;
+    font-size: 0.95rem;
+}
+
+.ride-card-footer {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+/* =========================
+   BOTÃO TEAMS
+========================= */
+
+.teams-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    background-color: #6264A7; /* cor oficial Teams */
+    color: #fff;
+    font-weight: 600;
+
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    transition: all 0.2s ease;
+}
+
+.teams-btn i {
+    font-size: 1.1rem;
+}
+
+.teams-btn:hover {
+    background-color: #4b4fa0;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* =====================================================
+   REFINO GLOBAL — RIDES + AUTH
+===================================================== */
+
+.page-section {
+    padding-top: 0.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.page-title {
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+.auth-card,
+.form-card {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card .card-body,
+.form-card .card-body {
+    padding: 2rem;
+}
+
+.auth-card .form-control,
+.form-card .form-control,
+.form-card .form-select {
+    border-radius: 12px;
+    border-color: #e2e6ea;
+}
+
+.auth-card .btn,
+.form-card .btn,
+.ride-card .btn {
+    border-radius: 12px;
+}
+
+.ride-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ride-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.ride-card-header {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ride-card-footer {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ride-card-footer form {
+    margin: 0;
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #495057;
+}
+
+.alert {
+    border-radius: 12px;
+}

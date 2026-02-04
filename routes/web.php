@@ -78,8 +78,8 @@ Route::middleware('auth')->group(function () {
     // pedir boleia
     Route::post('/rides/request', [RideController::class, 'requestRide'])->name('rides.request');
 
-    /* // visualizar as boleias pedidas ou oferecidas
-    Route::get('/rides/requests', [RideController::class, 'myRequests'])->name('rides.my_requests'); REMOVIDA*/
+    // visualizar as boleias pedidas ou oferecidas
+    Route::get('/rides/requests', [RideController::class, 'myRequests'])->name('rides.my_requests');
 
     // Info da boleia(ver) + Cancelar(excluir de all_rides e mudar status na my_requests(minhas boleias))
     Route::get('/rides/{ride}', [RideController::class, 'viewRide'])->name('rides.view');

@@ -26,9 +26,9 @@ class RideController extends Controller
         $request->validate([
             'pickup_location' => 'required|string|max:100',      // Não vazio, máx 100 chars
             'destination_location' => 'required|string|max:100',
-            'departure_date' => 'required|date|after:tomorrow', // Amanhã+
+            'departure_date' => 'required|date|after:today', // Amanhã+
             'departure_time' => 'required|date_format:H:i',     // HH:MM
-            'total_seats' => 'required|integer|min:1|max:8'  // 1-8 lugares
+            'total_seats' => 'required|integer|min:1|max:4'  // 1-4 lugares
         ]);
 
         // CRIA Ride no banco (fillable no Model permite estes campos)
@@ -187,7 +187,7 @@ class RideController extends Controller
 
 
     // 8. LISTAR PEDIDOS DE BOLEIA (PASSAGEIRO OU MOTORISTA)
-    /* public function myRequests()  REMOVIDA !!!!!!
+     public function myRequests()
     {
         // PASSAGEIRO: pedidos que ele fez
         if (auth()->user()->role === 'passenger') {
@@ -226,7 +226,7 @@ class RideController extends Controller
         return view('rides.my_requests', compact('requests', 'pageTitle'));
     }
 
- */
+
 
 
     // PASSAGEIRO: CANCELAR pedido de boleia
@@ -297,38 +297,53 @@ class RideController extends Controller
 
 
 
+
     // MOTORISTA: REJEITAR pedido
-    public function rejectRequest($id)
-    {
-        // 1. Buscar o pedido
-        $rideRequest = RideRequest::findOrFail($id);
-
-        // 2. Buscar a boleia
-        $ride = Ride::findOrFail($rideRequest->ride_id);
-
-        // 3. Só o motorista dono da boleia pode rejeitar
-        if (auth()->id() !== $ride->driver_id) {
-            abort(403);
-        }
-
-        // 4. Atualizar pedido para rejected
-        $rideRequest->status = 'rejected';
-        $rideRequest->save();
-        return back()->with('info', 'Pedido rejeitado.');
+public function rejectRequest($id)
+{
+    // Garantir que está autenticado
+    if (!auth()->check()) {
+        abort(403, 'Não autenticado');
     }
 
-    // MOTORISTA: APAGAR boleia
-    public function deleteRide(Ride $ride)
-    {
-        // Só o dono pode apagar
-        if (auth()->id() !== $ride->driver_id) {
-            abort(403);
-        }
+    // 1. Buscar o pedido
+    $rideRequest = RideRequest::findOrFail($id);
 
-        $ride->delete();  // apaga da tabela rides
+    // 2. Buscar a boleia
+    $ride = Ride::findOrFail($rideRequest->ride_id);
 
-        return redirect()
-            ->route('rides.all')
-            ->with('success', 'Boleia excluída com sucesso.');
+    // 3. Só o motorista dono da boleia pode rejeitar
+    if (auth()->id() !== $ride->driver_id) {
+        abort(403, 'Apenas o motorista pode rejeitar pedidos');
     }
+
+    // 4. Atualizar pedido para rejected
+    $rideRequest->status = 'rejected';
+    $rideRequest->save();
+
+    return back()->with('info', 'Pedido rejeitado.');
 }
+
+// MOTORISTA: APAGAR boleia
+public function deleteRide(Ride $ride)
+{
+    // Garantir que está autenticado
+    if (!auth()->check()) {
+        abort(403, 'Não autenticado');
+    }
+
+    // Só o dono pode apagar
+    if (auth()->id() !== $ride->driver_id) {
+        abort(403, 'Apenas o motorista da boleia pode apagá-la');
+    }
+
+    $ride->delete();  // apaga da tabela rides
+
+    return redirect()
+        ->route('rides.all')
+        ->with('success', 'Boleia excluída com sucesso.');
+}
+}
+
+
+
