@@ -13,15 +13,10 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <!-- CSS Global -->
+    <!-- CSS Projeto (DEPOIS do Bootstrap) -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-    <!-- CSS Home (específico da página) -->
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
-
 
 </head>
 
@@ -48,7 +43,7 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/"  >Home</a>
                     </li>
 
                     <li class="nav-item">
@@ -162,9 +157,12 @@
 
     <!-- CONTEÚDO -->
     <main class="main-content">
-        @yield('content')
-    </main>
+        <div class="container">
 
+            @yield('content')
+        </div>
+
+    </main>
 
     <!-- FOOTER -->
     <footer>
@@ -239,7 +237,8 @@
         </div>
 
     </footer>
-
+    
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     @stack('scripts')
 
