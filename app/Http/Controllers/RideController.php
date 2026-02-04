@@ -50,23 +50,27 @@ class RideController extends Controller
 
     // 3. LISTA BOLEIAS por ROLE
     public function allRides()
-    {
-        // with('driver') = carrega relação EAGER (iniciante: evita N+1 queries)
-        if (auth()->user()->role == 'driver') {
-            // Motorista: só SUAS boleias
-            $rides = Ride::with('driver')->where('driver_id', auth()->id())->get();
-        } elseif (auth()->user()->role == 'passenger') {
-            // Passageiro: só do SEU pickup_location (perfil)
-            $rides = Ride::with('driver')
-                ->where('pickup_location', auth()->user()->pickup_location)
-                ->get();
-        } else {
-            // Admin: TUDO (latest = mais recentes primeiro)
-            $rides = Ride::with('driver')->latest()->get();
-        }
+{
+    if (auth()->user()->role === 'driver') {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->where('driver_id', auth()->id())
+            ->latest()
+            ->get();
 
-        return view('rides.all_rides', compact('rides'));
+    } elseif (auth()->user()->role === 'passenger') {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->where('pickup_location', auth()->user()->pickup_location)
+            ->latest()
+            ->get();
+
+    } else {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->latest()
+            ->get();
     }
+
+    return view('rides.all_rides', compact('rides'));
+}
 
     // 4. VER 1 boleia específica (route model binding: Ride $ride = acha por ID)
     public function viewRide(Ride $ride)
@@ -180,8 +184,10 @@ class RideController extends Controller
             ->with('success', 'Pedido de boleia enviado. Aguarde aprovação do motorista.');
     }
 
+
+
     // 8. LISTAR PEDIDOS DE BOLEIA (PASSAGEIRO OU MOTORISTA)
-    public function myRequests()
+    /* public function myRequests()  REMOVIDA !!!!!!
     {
         // PASSAGEIRO: pedidos que ele fez
         if (auth()->user()->role === 'passenger') {
@@ -219,6 +225,9 @@ class RideController extends Controller
 
         return view('rides.my_requests', compact('requests', 'pageTitle'));
     }
+
+ */
+
 
     // PASSAGEIRO: CANCELAR pedido de boleia
     public function cancelRequest($id)

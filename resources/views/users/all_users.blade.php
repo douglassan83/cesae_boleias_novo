@@ -1,7 +1,8 @@
 @extends('layouts.main_layout')
 @section('content')
 
-    <br>
+<div class="container mt-4">
+
     {{-- botão add user --}}
     <a href="{{ route('users.add') }}" class="btn btn-success"> Adicionar Usuário</a>
     <br>
@@ -59,4 +60,5 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 @endsection

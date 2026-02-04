@@ -15,8 +15,7 @@ Route::get('/react-test', function () {
 
 
 
-
-Route::get('/', [UtilController::class, 'home'])
+ Route::get('/', [UtilController::class, 'home'])
     ->name('utils.welcome'); //dar nome para a rota
 
 Route::get('/hello', function () {
@@ -29,8 +28,9 @@ Route::get('/turma/{nomeTurma}', function ($nomeTurma) {
 })->name('turma.name');
 
 
-
-
+// pagina contatos e como funciona
+Route::view('/como-funciona', 'utils.como_funciona')->name('utils.how');
+Route::view('/contactos', 'utils.contactos')->name('utils.contact');
 
 
 
@@ -78,8 +78,8 @@ Route::middleware('auth')->group(function () {
     // pedir boleia
     Route::post('/rides/request', [RideController::class, 'requestRide'])->name('rides.request');
 
-    // visualizar as boleias pedidas ou oferecidas
-    Route::get('/rides/requests', [RideController::class, 'myRequests'])->name('rides.my_requests');
+    /* // visualizar as boleias pedidas ou oferecidas
+    Route::get('/rides/requests', [RideController::class, 'myRequests'])->name('rides.my_requests'); REMOVIDA*/
 
     // Info da boleia(ver) + Cancelar(excluir de all_rides e mudar status na my_requests(minhas boleias))
     Route::get('/rides/{ride}', [RideController::class, 'viewRide'])->name('rides.view');

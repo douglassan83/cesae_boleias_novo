@@ -5,8 +5,8 @@
 @section('content')
 
 
-    <div class="container mt-4">
-        <h3 class="mb-4">Criar Boleia CESAE </h3>
+    <div class="container mt-4" style="max-width: 600px;">
+        <h3 class="mb-4">OFERECER BOLEIA </h3>
 
         {{-- ALERTAS --}}
         @if (session('success'))
@@ -113,6 +113,7 @@
             </div>
         </form>
     </div>
+    <br>
 
 @endsection
 
