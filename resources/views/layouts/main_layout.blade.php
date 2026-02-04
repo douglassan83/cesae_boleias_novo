@@ -62,7 +62,7 @@
                     </li>
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('rides.all') }}">Dashboard</a>
+                            <a class="nav-link" href="{{ route('rides.all') }}">Boleias</a>
                         </li>
                     </ul>
 

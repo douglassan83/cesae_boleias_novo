@@ -24,11 +24,11 @@ class RideController extends Controller
     {
         // Valida CAMPOS do form (required = obrigatório)
         $request->validate([
-            'pickup_location'     => 'required|string|max:100',      // Não vazio, máx 100 chars
-            'destination_location'=> 'required|string|max:100',
-            'departure_date'      => 'required|date|after:tomorrow', // Amanhã+
-            'departure_time'      => 'required|date_format:H:i',     // HH:MM
-            'total_seats'         => 'required|integer|min:1|max:8'  // 1-8 lugares
+            'pickup_location' => 'required|string|max:100',      // Não vazio, máx 100 chars
+            'destination_location' => 'required|string|max:100',
+            'departure_date' => 'required|date|after:today', // Amanhã+
+            'departure_time' => 'required|date_format:H:i',     // HH:MM
+            'total_seats' => 'required|integer|min:1|max:4'  // 1-4 lugares
         ]);
 
         // CRIA Ride no banco (fillable no Model permite estes campos)
@@ -50,23 +50,27 @@ class RideController extends Controller
 
     // 3. LISTA BOLEIAS por ROLE
     public function allRides()
-    {
-        // with('driver') = carrega relação EAGER (iniciante: evita N+1 queries)
-        if (auth()->user()->role == 'driver') {
-            // Motorista: só SUAS boleias
-            $rides = Ride::with('driver')->where('driver_id', auth()->id())->get();
-        } elseif (auth()->user()->role == 'passenger') {
-            // Passageiro: só do SEU pickup_location (perfil)
-            $rides = Ride::with('driver')
-                ->where('pickup_location', auth()->user()->pickup_location)
-                ->get();
-        } else {
-            // Admin: TUDO (latest = mais recentes primeiro)
-            $rides = Ride::with('driver')->latest()->get();
-        }
+{
+    if (auth()->user()->role === 'driver') {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->where('driver_id', auth()->id())
+            ->latest()
+            ->get();
 
-        return view('rides.all_rides', compact('rides'));
+    } elseif (auth()->user()->role === 'passenger') {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->where('pickup_location', auth()->user()->pickup_location)
+            ->latest()
+            ->get();
+
+    } else {
+        $rides = Ride::with(['driver', 'rideRequests.passenger'])
+            ->latest()
+            ->get();
     }
+
+    return view('rides.all_rides', compact('rides'));
+}
 
     // 4. VER 1 boleia específica (route model binding: Ride $ride = acha por ID)
     public function viewRide(Ride $ride)
@@ -172,8 +176,10 @@ class RideController extends Controller
             ->with('success', 'Pedido de boleia enviado. Aguarde aprovação do motorista.');
     }
 
+
+
     // 8. LISTAR PEDIDOS DE BOLEIA (PASSAGEIRO OU MOTORISTA)
-    public function myRequests()
+     public function myRequests()
     {
         // PASSAGEIRO: pedidos que ele fez
         if (auth()->user()->role === 'passenger') {
@@ -212,6 +218,9 @@ class RideController extends Controller
         return view('rides.my_requests', compact('requests', 'pageTitle'));
     }
 
+
+
+
     // PASSAGEIRO: CANCELAR pedido de boleia
     public function cancelRequest($id)
 {
@@ -244,45 +253,15 @@ class RideController extends Controller
 }
 
 
-// MOTORISTA: ACEITAR pedido
-public function acceptRequest($id)
-{
-    // 1. Buscar o pedido na tabela ride_requests
-    $rideRequest = RideRequest::findOrFail($id);
 
-    // 2. Buscar a boleia ligada a este pedido
-    $ride = Ride::findOrFail($rideRequest->ride_id);
-
-    // 3. Só o motorista dono da boleia pode aceitar
-    if (auth()->id() !== $ride->driver_id) {
-        abort(403);
-    }
-
-    // 4. Verificar se boleia ainda está disponível
-    if ($ride->status !== 'active' || $ride->available_seats <= 0) {
-        return back()->with('error', 'Boleia indisponível para aceitar pedido.');
-    }
-
-    // 5. Atualizar pedido para accepted
-    $rideRequest->status = 'accepted';
-    $rideRequest->teams_link = 'https://teams.microsoft.com/l/meetup-join/XXXX';
-    $rideRequest->save();
-
-    // 6. Atualizar lugares disponíveis
-    $ride->available_seats = $ride->available_seats - 1;
-    if ($ride->available_seats <= 0) {
-        $ride->status = 'full';
-    }
-    $ride->save();
-
-    return back()->with('success', 'Pedido aceito com sucesso.');
-}
-
-
-
-// MOTORISTA: REJEITAR pedido
+    // MOTORISTA: REJEITAR pedido
 public function rejectRequest($id)
 {
+    // Garantir que está autenticado
+    if (!auth()->check()) {
+        abort(403, 'Não autenticado');
+    }
+
     // 1. Buscar o pedido
     $rideRequest = RideRequest::findOrFail($id);
 
@@ -291,21 +270,27 @@ public function rejectRequest($id)
 
     // 3. Só o motorista dono da boleia pode rejeitar
     if (auth()->id() !== $ride->driver_id) {
-        abort(403);
+        abort(403, 'Apenas o motorista pode rejeitar pedidos');
     }
 
     // 4. Atualizar pedido para rejected
     $rideRequest->status = 'rejected';
     $rideRequest->save();
+
     return back()->with('info', 'Pedido rejeitado.');
-    }
+}
 
 // MOTORISTA: APAGAR boleia
 public function deleteRide(Ride $ride)
 {
+    // Garantir que está autenticado
+    if (!auth()->check()) {
+        abort(403, 'Não autenticado');
+    }
+
     // Só o dono pode apagar
-    if (auth()->id() !== $ride->driver_id ) {
-        abort(403);
+    if (auth()->id() !== $ride->driver_id) {
+        abort(403, 'Apenas o motorista da boleia pode apagá-la');
     }
 
     $ride->delete();  // apaga da tabela rides
@@ -313,5 +298,8 @@ public function deleteRide(Ride $ride)
     return redirect()
         ->route('rides.all')
         ->with('success', 'Boleia excluída com sucesso.');
-    }
 }
+}
+
+
+

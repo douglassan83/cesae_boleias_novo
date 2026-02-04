@@ -1,10 +1,9 @@
 @extends('layouts.main_layout')
 
 @section('content')
-    <div class="container">
-        <br>
-        <h3>{{ $pageTitle }}</h3>
-        <br>
+    <div class="container page-section">
+        <h3 class="page-title">{{ $pageTitle }}</h3>
+        <p class="page-subtitle">Acompanha o estado dos teus pedidos e boleias.</p>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -15,92 +14,98 @@
         @if (session('info'))
             <div class="alert alert-info">{{ session('info') }}</div>
         @endif
+        {{-- LISTA DE PEDIDOS --}}
+        <div class="row">
+            @forelse ($requests as $request)
+                @php
+                    $ride = $request->ride;
+                @endphp
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="ride-card">
 
-                    <th>Boleia</th>
-                    <th>Motorista</th>
-                    <th>Passageiro</th>
-                    <th>Origem</th>
-                    <th>Destino</th>
-                    <th>Data/Hora</th>
-                    <th>Status pedido</th>
-                    <th>Pedido</th>
+                        {{-- HEADER --}}
+                        <div class="ride-card-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ $ride->driver->photo ? asset('storage/' . $ride->driver->photo) : asset('images/nophoto.png') }}"
+                                    class="ride-avatar">
+                                <strong>{{ $ride->driver->name }}</strong>
+                            </div>
 
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($requests as $request)
-                    <tr>
-                        <td>{{ $request->id }}</td>
+                            {{-- STATUS DO PEDIDO --}}
+                            @if ($request->status === 'pending')
+                                <span class="badge bg-warning">🟡 Pendente</span>
+                            @elseif ($request->status === 'accepted')
+                                <span class="badge bg-success">✅ Aceite</span>
+                            @else
+                                <span class="badge bg-danger">❌ Rejeitado</span>
+                            @endif
+                        </div>
 
-                        <td>{{ $request->ride->driver->name ?? 'N/A' }}</td>
-                        <td>{{ $request->passenger->name ?? 'N/A' }}</td>
-                        <td>{{ $request->ride->pickup_location ?? 'N/A' }}</td>
-                        <td>{{ $request->ride->destination_location ?? 'N/A' }}</td>
+                        {{-- BODY --}}
+                        <div class="ride-card-body">
 
-                        {{-- DATA / HORA --}}
-                        <td>
-                            {{ optional($request->ride->departure_date)->format('d/m/Y') ?? 'N/A' }}
-                            -
-                            {{ optional($request->ride->departure_time)->format('H:i') ?? 'N/A' }}
-                        </td>
+                            <p class="fw-semibold mb-2">
+                                📍 {{ $ride->pickup_location }}
+                                <span class="mx-1">→</span>
+                                {{ $ride->destination_location }}
+                            </p>
 
-                        {{-- STATUS --}}
-                        <td>
-                            <span
-                                class="badge
-            @if ($request->status === 'pending') bg-warning
-            @elseif ($request->status === 'accepted') bg-success
-            @else bg-danger @endif">
-                                {{ ucfirst($request->status) }}
+                            <p class="mb-1">
+                                📅 {{ optional($ride->departure_date)->format('d/m/Y') }}
+                                ⏰ {{ optional($ride->departure_time)->format('H:i') }}
+                            </p>
+
+                            <span class="badge bg-info">
+                                👥 {{ $ride->available_seats }} / {{ $ride->total_seats }} lugares
                             </span>
-                        </td>
 
-                        {{-- PEDIDO --}}
-                        <td>
-                            <a href="{{ route('rides.view', $request->ride->id) }}" class="btn btn-primary btn-sm mb-1">
-                                VER
-                            </a>
-
+                            {{-- TEAMS (SÓ SE ACEITE) --}}
                             @if ($request->status === 'accepted' && $request->teams_link)
-                                <br>
-                                <a href="{{ $request->teams_link }}" target="_blank" class="btn btn-sm btn-success mt-1">
-                                    🎥 Entrar no Teams
+                                <a href="{{ $request->teams_link }}" target="_blank"
+                                    title="Abrir reunião no Microsoft Teams" class="teams-btn mt-3">
+
+                                    <i class="bi bi-microsoft-teams"></i>
+                                    Entrar no Teams
                                 </a>
                             @endif
 
-                            {{-- AÇÕES DO MOTORISTA --}}
-                            @if (auth()->user()->role === 'driver' && $request->status === 'pending' && $request->ride->driver_id === auth()->id())
-                                <div class="d-flex gap-1 mt-1">
-                                    <form method="POST" action="{{ route('ride_requests.accept', $request->id) }}">
-                                        @csrf
-                                        <button class="btn btn-sm btn-success">Aceitar</button>
-                                    </form>
+                        </div>
 
-                                    <form method="POST" action="{{ route('ride_requests.reject', $request->id) }}">
-                                        @csrf
-                                        <button class="btn btn-sm btn-danger">Rejeitar</button>
-                                    </form>
-                                </div>
+                        {{-- FOOTER --}}
+                        <div class="ride-card-footer">
+
+                            <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
+                                Ver boleia
+                            </a>
+
+                            {{-- CANCELAR PEDIDO (se ainda não rejeitado) --}}
+                            @if ($request->status !== 'rejected')
+                                <form method="POST" action="{{ route('ride_requests.cancel', $request->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-danger">
+                                        Cancelar
+                                    </button>
+                                </form>
                             @endif
-                        </td>
-                    </tr>
 
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">
-                            Nenhum pedido de boleia encontrado.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            @empty
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-car-front fs-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">
+                        Ainda não pediste nenhuma boleia
+                    </h5>
+                </div>
+            @endforelse
+        </div>
 
         <a href="{{ route('rides.all') }}" class="btn btn-secondary">← Voltar às boleias</a>
     </div>
 @endsection
-
  

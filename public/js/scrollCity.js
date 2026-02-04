@@ -4,10 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const locations = [
         "São João da Madeira",
+        "Oliveira de Azeméis",
         "Porto",
         "Gaia",
         "CESAE Digital SJ Madeira",
-        "CESAE Porto",
         "Espinho",
         "Aveiro",
         "Santa Maria da Feira"

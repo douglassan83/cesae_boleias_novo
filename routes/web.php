@@ -15,8 +15,7 @@ Route::get('/react-test', function () {
 
 
 
-
-Route::get('/', [UtilController::class, 'home'])
+ Route::get('/', [UtilController::class, 'home'])
     ->name('utils.welcome'); //dar nome para a rota
 
 Route::get('/hello', function () {
@@ -29,8 +28,9 @@ Route::get('/turma/{nomeTurma}', function ($nomeTurma) {
 })->name('turma.name');
 
 
-
-
+// pagina contatos e como funciona
+Route::view('/como-funciona', 'utils.como_funciona')->name('utils.how');
+Route::view('/contactos', 'utils.contactos')->name('utils.contact');
 
 
 
