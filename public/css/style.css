@@ -517,13 +517,13 @@ footer hr {
     border-radius: 12px;
 
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.6rem;
 
     transition: all 0.2s ease;
 }
 
 .teams-btn i {
-    font-size: 1.1rem;
+    font-size: 0.8rem;
 }
 
 .teams-btn:hover {
@@ -607,4 +607,19 @@ footer hr {
 
 .alert {
     border-radius: 12px;
+}
+
+#card-email-passenger{
+    font-size: 10px;
+
+}
+
+#pickup_location {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+}
+
+#pickup_location::placeholder {
+    color: #adb5bd;
+    font-weight: 400;
 }

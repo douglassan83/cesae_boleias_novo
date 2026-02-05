@@ -77,33 +77,39 @@ class UserController extends Controller
         return back()->with('message', 'Usuário deletado com sucesso');
     }
 
-    public function updateUser(Request $request)
+   public function updateUser(Request $request)
 {
     $request->validate([
         'name' => 'required|string|max:50',
-        'photo' => 'nullable|image|max:2048',
+        'photo' => 'nullable|image|max:2048',           // Opcional
         'whatsapp_phone' => 'nullable|string|max:20',
         'pickup_location' => 'required|string|max:255',
         'bio' => 'nullable|string|max:1000',
     ]);
 
-    $photo = $request->photo_path ?? null;
+    $user = User::findOrFail($request->id);  // Busca pelo ID
+
+    // 🔥 FOTO: só muda SE novo ficheiro enviado
     if ($request->hasFile('photo')) {
-        $photo = $request->file('photo')->store('userPhotos', 'public');
+        // Apaga foto antiga (se existir)
+        if ($user->photo) {
+            Storage::disk('public')->delete($user->photo);
+        }
+        // Salva nova
+        $user->photo = $request->file('photo')->store('userPhotos', 'public');
     }
+    // Se NÃO tem ficheiro novo → mantém a foto antiga ($user->photo)
 
-    DB::table('users')
-        ->where('id', $request->id)
-        ->update([
-            'name' => $request->name,
-            'whatsapp_phone' => $request->whatsapp_phone,
-            'pickup_location' => $request->pickup_location,
-            'bio' => $request->bio,
-            'photo' => $photo,
-            'updated_at' => now(),
-        ]);
+    // Atualiza outros campos
+    $user->name = $request->name;
+    $user->whatsapp_phone = $request->whatsapp_phone;
+    $user->pickup_location = $request->pickup_location;
+    $user->bio = $request->bio;
 
-    return redirect()->route('users.view', $request->id)->with('message', 'Usuário atualizado com sucesso');
+    $user->save();
+
+    return redirect()->back()->with('message', 'Perfil atualizado com sucesso!');
 }
+
 
 }

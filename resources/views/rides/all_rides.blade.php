@@ -8,9 +8,10 @@
             @if (auth()->user()->role == 'driver')
                 Minhas Boleias oferecidas (Motorista)
             @elseif(auth()->user()->role == 'passenger')
-                Procurar Boleias (Passageiro) ({{ auth()->user()->pickup_location ?? 'Preencha ponto de partida no perfil!' }})
+                Procurar Boleias perto de:
+                {{ auth()->user()->pickup_location ?? 'sem ponto de partida' }}
             @else
-                TODAS Boleias (Admin)
+                Todas as Boleias (Admin)
             @endif
         </h3>
         <p class="page-subtitle">
@@ -112,17 +113,9 @@
                                 ⏰ {{ date('H:i', strtotime($ride->departure_time)) }}
                             </p>
 
-                            <span class="badge bg-info">
+                            <span class="badge bg-primary">
                                 👥 {{ $ride->available_seats }} / {{ $ride->total_seats }} lugares
                             </span>
-                            @if ($myRequest && $myRequest->teams_link)
-                                <a href="{{ $myRequest->teams_link }}" target="_blank"
-                                    title="Abrir reunião no Microsoft Teams" class="teams-btn mt-3">
-
-                                    <i class="bi bi-microsoft-teams"></i>
-                                    Contactar no Teams
-                                </a>
-                            @endif
 
 
                         </div>
@@ -143,6 +136,18 @@
                                 </a>
                             @endif
 
+                            {{-- botao teams --}}
+
+                            @if ($myRequest && $myRequest->teams_link)
+                                <a href="{{ $myRequest->teams_link }}" target="_blank"
+                                    title="Abrir reunião no Microsoft Teams" class="teams-btn mt-2">
+
+                                    <i class="bi bi-microsoft-teams"> Teams</i>
+
+                                </a>
+                            @endif
+
+
                         </div>
                     </div>
                 </div>
@@ -153,11 +158,19 @@
                     <h5 class="mt-3 text-muted">
                         Nenhuma boleia disponível
                     </h5>
-                    <h5><i>{{ auth()->user()->pickup_location ?? 'Atenção: preencha ponto de partida no perfil!' }}</i></h5>
+                    @if (Auth::user()->role != 'driver' && auth()->user()->pickup_location == '')
+                        <div class="alert alert-danger"">
+                            <h5>
+                                <i>
+                                'Atenção: preencha ponto de partida no perfil!' </i>
+                            </h5>
+                        </div>
+                    @endif
                 </div>
-            @endforelse
-
         </div>
+        @endforelse
+
+    </div>
 
     </div>
 @endsection

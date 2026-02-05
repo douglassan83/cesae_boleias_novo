@@ -14,12 +14,10 @@
                     @csrf
 
                     <div class="mb-3 position-relative">
-                        <label class="form-label fw-bold">Origem (Casa/Ponto Partida)</label>
-
-                        {{-- Local de Recolha --}}
+                        <label class="form-label fw-bold">Ponto de Partida</label>
                         <input type="text" name="pickup_location" id="pickup_location"
                             class="form-control @error('pickup_location') is-invalid @enderror"
-                            placeholder="Ex: São João da Madeira" autocomplete="off" required>
+                            placeholder="Escolha um ponto de partida:" autocomplete="off" required>
 
                         <ul id="pickup_list" class="list-group suggestion-list d-none"></ul>
 
@@ -34,9 +32,9 @@
 
                         <input type="text" name="destination_location" id="destination_location"
                             class="form-control @error('destination_location') is-invalid @enderror"
-                            placeholder="Ex: CESAE Digital SJ Madeira" autocomplete="off" required>
+                            value ="Cesae Digital São João da Madeira" autocomplete="off" readonly required>
 
-                        <ul id="destination_list" class="list-group suggestion-list d-none"></ul>
+                      {{--   <ul id="destination_list" class="list-group suggestion-list d-none"></ul> --}}
 
                         @error('destination_location')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -95,4 +93,3 @@
 @push('scripts')
     <script src="{{ asset('js/scrollCity.js') }}"></script>
 @endpush
- 
