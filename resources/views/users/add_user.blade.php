@@ -61,6 +61,20 @@
             </div>
         @endguest
 
+        <div class="mb-3 form-check">
+                    <input type="checkbox" name="terms" id="terms" class="form-check-input" required>
+                    <label for="terms" class="form-check-label">
+                        Aceito os
+                        <a href="{{ route('utils.terms') }}" target="_blank">
+                            Termos de Uso e Responsabilidade
+                        </a>
+                    </label>
+
+                    @error('terms')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
         <button type="submit" class="btn btn-primary">{{ $pageAdmin ?? 'Registar' ? 'Adicionar' : '' }}</button>
 
     </form>

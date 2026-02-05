@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TermsController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RideController;
@@ -32,9 +33,12 @@ Route::get('/turma/{nomeTurma}', function ($nomeTurma) {
 Route::view('/como-funciona', 'utils.como_funciona')->name('utils.how');
 Route::view('/contactos', 'utils.contactos')->name('utils.contact');
 
+//rota para termos de responsabilidades e normas para confirmar antes do registo
+Route::get('/terms',[TermsController::class,'terms'])->name('utils.terms');
 
 
-//ROTAS DO USER
+
+//ROTAS DO USER 
 
 //abre a listagem de todos os usuario
 Route::get('/allusers', [UserController::class, 'allUsers'])->name('users.all')->middleware('auth');

@@ -8,7 +8,7 @@
             @if (auth()->user()->role == 'driver')
                 Minhas Boleias oferecidas (Motorista)
             @elseif(auth()->user()->role == 'passenger')
-                Procurar Boleias (Passageiro) ({{ auth()->user()->pickup_location ?? 'Preencha perfil!' }})
+                Procurar Boleias (Passageiro) ({{ auth()->user()->pickup_location ?? 'Preencha ponto de partida no perfil!' }})
             @else
                 TODAS Boleias (Admin)
             @endif
@@ -153,6 +153,7 @@
                     <h5 class="mt-3 text-muted">
                         Nenhuma boleia disponível
                     </h5>
+                    <h5><i>{{ auth()->user()->pickup_location ?? 'Atenção: preencha ponto de partida no perfil!' }}</i></h5>
                 </div>
             @endforelse
 
@@ -160,4 +161,3 @@
 
     </div>
 @endsection
- 
