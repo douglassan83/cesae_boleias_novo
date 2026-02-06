@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
+use App\Http\Controllers\ContactController;
 
 
 //teste de react na pasta resources/js
@@ -16,12 +17,12 @@ Route::get('/react-test', function () {
 
 
 
- Route::get('/', [UtilController::class, 'home'])
+Route::get('/', [UtilController::class, 'home'])
     ->name('utils.welcome'); //dar nome para a rota
 
 Route::get('/hello', function () {
     return view('utils.helloView');
-})->name('utils.hello');//dar nome para a rotanp
+})->name('utils.hello'); //dar nome para a rotanp
 
 Route::get('/turma/{nomeTurma}', function ($nomeTurma) {
     //ir a base de dados e buscar a info da turma
@@ -34,11 +35,11 @@ Route::view('/como-funciona', 'utils.como_funciona')->name('utils.how');
 Route::view('/contactos', 'utils.contactos')->name('utils.contact');
 
 //rota para termos de responsabilidades e normas para confirmar antes do registo
-Route::get('/terms',[TermsController::class,'terms'])->name('utils.terms');
+Route::get('/terms', [TermsController::class, 'terms'])->name('utils.terms');
 
 
 
-//ROTAS DO USER 
+//ROTAS DO USER
 
 //abre a listagem de todos os usuario
 Route::get('/allusers', [UserController::class, 'allUsers'])->name('users.all')->middleware('auth');
@@ -94,18 +95,29 @@ Route::middleware('auth')->group(function () {
     Route::put('/rides/{ride}', [RideController::class, 'updateRide'])->name('rides.update');
 
     // aceitar boleia / rejeitar pedido (sempre com ID numérico do pedido)
-Route::post('/ride-requests/{id}/accept', [RideController::class, 'acceptRequest'])
-    ->name('ride_requests.accept');
+    Route::post('/ride-requests/{id}/accept', [RideController::class, 'acceptRequest'])
+        ->name('ride_requests.accept');
 
-  //  rejeitar pedido
+    //  rejeitar pedido
 
-Route::post('/ride-requests/{id}/reject', [RideController::class, 'rejectRequest'])
-    ->name('ride_requests.reject');
-
-
-
-
+    Route::post('/ride-requests/{id}/reject', [RideController::class, 'rejectRequest'])
+        ->name('ride_requests.reject');
 });
+
+// Envio de mensagens
+Route::post('/contact/store', [ContactController::class, 'store'])->name('contact.store');
+
+// Página do admin (proteger com middleware admin)
+Route::get('/admin/messages', [ContactController::class, 'index'])
+    ->middleware(\App\Http\Middleware\IsAdmin::class)
+    ->name('admin.messages');
+
+Route::post('/admin/messages/{id}/resolve', [ContactController::class, 'resolve'])
+    ->middleware(\App\Http\Middleware\IsAdmin::class)
+    ->name('admin.messages.resolve');
+
+
+
 
 
 
