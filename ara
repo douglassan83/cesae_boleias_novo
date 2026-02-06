@@ -1,0 +1,17 @@
+*   [33m8452517[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msara[m[33m, [m[1;31morigin/sara[m[33m)[m Merge remote-tracking branch 'origin/main' into sara
+[31m|[m[32m\[m  
+[31m|[m *   [33mfba53a9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Merge pull request #11 from douglassan83/douglas
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m9e9dcc6[m[33m ([m[1;31morigin/douglas[m[33m)[m lista de pendencias do google docs
+[31m|[m * [34m|[m [33m5d1e8f5[m Merge pull request #10 from douglassan83/douglas
+[31m|[m [35m|[m[34m\[m[34m|[m 
+[31m|[m [35m|[m * [33mcda040d[m feat(douglas): adiciona TermsController + view termos de responsabilidade
+[31m|[m * [36m|[m [33m83c742b[m Mranch 'douglas'
+[31m|[m [1;31m|[m[36m\[m[36m|[m 
+[31m|[m [1;31m|[m * [33m7d7d9ab[m inserção dos cards do filipe na views boleias
+[31m|[m * [1;32m|[m [33m57c3e7f[m Revert "Merge pull request #7 from douglassan83/douglas"
+[31m|[m * [1;32m|[m   [33m6825c95[m Merge pull request #7 from douglassan83/douglas
+[31m|[m [1;33m|[m[1;34m\[m [1;32m\[m  
+* [1;33m|[m [1;34m|[m [1;32m|[m [33m679f075[m Refina layout da home, estados ativos da navbar e melhorias na página de contactos
+[1;32m|[m [1;33m|[m[1;32m_[m[1;34m|[m[1;32m/[m  
+[1;32m|[m[1;32m/[m[1;33m|[m [1;34m|[m   
