@@ -27,17 +27,25 @@
         {{-- BOTões --}}
 
         @auth
-            {{-- ADMIN: vê 3 botões --}}
-            @if (auth()->user()->role == 'admin')
-                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
-                    Adicionar Boleia
-                </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
-                    Pedidos Recebidos
-                </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
-                    Pedidos Solicitados
-                </a>
+            {{-- ADMIN: vê 4 botões --}}
+@if (auth()->user()->role == 'admin')
+    <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
+        Adicionar Boleia
+    </a>
+
+    <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+        Pedidos Recebidos
+    </a>
+
+    <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
+        Pedidos Solicitados
+    </a>
+
+    <a href="{{ route('admin.messages') }}" class="btn btn-danger mb-3">
+        Ver Mensagens dos Utilizadores
+    </a>
+
+
 
                 {{-- DRIVER: 2 botões --}}
             @elseif (auth()->user()->role == 'driver')
