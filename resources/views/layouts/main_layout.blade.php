@@ -48,29 +48,42 @@
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">
+                            Home
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/como-funciona">Como Funciona</a>
+                        <a class="nav-link {{ request()->is('como-funciona') ? 'active' : '' }}" href="/como-funciona">
+                            Como Funciona
+                        </a>
                     </li>
-
-
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/contactos">Contactos</a>
+                        <a class="nav-link {{ request()->is('contactos') ? 'active' : '' }}" href="/contactos">
+                            Contactos
+                        </a>
                     </li>
+
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('rides.all') }}">Dashboard</a>
+                            <a class="nav-link {{ request()->is('rides*') ? 'active' : '' }}"
+                                href="{{ route('rides.all') }}">
+                                Boleias
+                            </a>
                         </li>
-                    </ul>
+                    @endauth
 
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-main">
+                </ul>
 
+                {{-- LINKS À DIREITA --}}
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-main">
+
+                    @auth
                         @if (Auth::user()->role === 'admin')
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('users.all') }}">
+                                <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}"
+                                    href="{{ route('users.all') }}">
                                     Área de Administração
                                 </a>
                             </li>
@@ -81,9 +94,10 @@
                                 </a>
                             </li>
                         @endif
-
                     @endauth
+
                 </ul>
+
 
                 {{-- USER AREA --}}
                 <ul class="navbar-nav user-area">
@@ -169,7 +183,7 @@
     <!-- FOOTER -->
     <footer>
 
-        <div class="container">
+        <div class="container-fluid">
 
             {{-- =============================
             COMUNICAÇÕES
@@ -181,7 +195,7 @@
                     e regras de utilização.
                 </p>
 
-                <a href="#" class="footer-button">
+                <a href="{{ route('utils.contact') }}" class="footer-button">
                     Receber comunicação
                 </a>
             </div>
@@ -204,19 +218,29 @@
                     </p>
 
                     <div class="footer-socials">
-                        <a href="#" class="social-circle" aria-label="Instagram">
+
+                        <a href="https://www.instagram.com/cesae.digital/" class="social-circle" target="_blank"
+                            rel="noopener noreferrer" aria-label="Instagram CESAE Digital">
                             <i class="bi bi-instagram"></i>
                         </a>
-                        <a href="#" class="social-circle" aria-label="Facebook">
+
+                        <a href="https://www.facebook.com/CESAE.Digital" class="social-circle" target="_blank"
+                            rel="noopener noreferrer" aria-label="Facebook CESAE Digital">
                             <i class="bi bi-facebook"></i>
                         </a>
-                        <a href="#" class="social-circle" aria-label="YouTube">
+
+                        <a href="https://www.youtube.com/@cesaedigital" class="social-circle" target="_blank"
+                            rel="noopener noreferrer" aria-label="YouTube CESAE Digital">
                             <i class="bi bi-youtube"></i>
                         </a>
-                        <a href="#" class="social-circle" aria-label="LinkedIn">
+
+                        <a href="https://www.linkedin.com/school/cesae-digital/" class="social-circle"
+                            target="_blank" rel="noopener noreferrer" aria-label="LinkedIn CESAE Digital">
                             <i class="bi bi-linkedin"></i>
                         </a>
+
                     </div>
+
 
                 </div>
 
