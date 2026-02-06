@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("scrollCity carregado com sucesso");
 
     const locations = [
+<<<<<<< HEAD
         "São João da Madeira",
         "Oliveira de Azeméis",
         "Porto",
@@ -12,6 +13,29 @@ document.addEventListener("DOMContentLoaded", function () {
         "Espinho",
         "Aveiro",
         "Santa Maria da Feira"
+=======
+        
+        "Águeda",
+"Albergaria-a-Velha",
+"Anadia",
+"Arouca",
+"Aveiro",
+"Espinho",
+"Estarreja",
+"Gondomar",
+"Ílhavo",
+"Murtosa",
+"Oliveira de Azeméis",
+"Oliveira do Bairro",
+"Ovar",
+"Porto",
+"Santa Maria da Feira",
+"São João da Madeira",
+"Sever do Vouga",
+"Vale de Cambra",
+"Vila Nova de Gaia",
+"Vagos"
+>>>>>>> origin/main
     ];
 
     function renderList(items, input, list) {
