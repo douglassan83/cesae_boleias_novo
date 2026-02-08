@@ -80,6 +80,7 @@ class RideController extends Controller
         $ride->load([
         'driver:id,name,email',
         'rideRequests.passenger:id,name,email'
+
     ]);
 
         return view('rides.view_ride', compact('ride'));
@@ -252,6 +253,46 @@ class RideController extends Controller
     return back()->with('success', 'Pedido de boleia cancelado.');
 }
 
+// MOTORISTA: ACEITAR pedido
+public function acceptRequest($id)
+{
+    // Garantir que está autenticado
+    if (!auth()->check()) {
+        abort(403, 'Não autenticado');
+    }
+
+    // 1. Buscar o pedido
+    $rideRequest = RideRequest::findOrFail($id);
+
+    // 2. Buscar a boleia
+    $ride = Ride::findOrFail($rideRequest->ride_id);
+
+    // 3. Só o motorista dono da boleia pode aceitar
+    if (auth()->id() !== $ride->driver_id) {
+        abort(403, 'Apenas o motorista pode aceitar pedidos');
+    }
+
+    // 4. Verificar se ainda há lugares
+    if ($ride->available_seats <= 0 || $ride->status !== 'active') {
+        return back()->with('error', 'Não há lugares disponíveis nesta boleia.');
+    }
+
+    // 5. Atualizar pedido para accepted
+    $rideRequest->status = 'accepted';
+    $rideRequest->save();
+
+    // 6. Reduzir lugares disponíveis
+    $ride->available_seats -= 1;
+
+    // Se ficou cheia → status = full
+    if ($ride->available_seats <= 0) {
+        $ride->status = 'full';
+    }
+
+    $ride->save();
+
+    return back()->with('success', 'Pedido aceite com sucesso!');
+}
 
 
     // MOTORISTA: REJEITAR pedido

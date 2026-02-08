@@ -3,6 +3,7 @@
     @php use App\Models\RideRequest; @endphp
 
     <div class="container mt-4 page-section">
+
         {{-- TÍTULO DINÂMICO POR ROLE --}}
         <h3 class="page-title mb-1">
             @if (auth()->user()->role == 'driver')
@@ -14,6 +15,7 @@
                 Todas as Boleias (Admin)
             @endif
         </h3>
+
         <p class="page-subtitle">
             @if (auth()->user()->role == 'driver')
                 Gere as tuas boleias ativas e responde aos pedidos.
@@ -24,46 +26,22 @@
             @endif
         </p>
 
-        {{-- BOTões --}}
-
+        {{-- BOTÕES --}}
         @auth
-            {{-- ADMIN: vê 4 botões --}}
-@if (auth()->user()->role == 'admin')
-    <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
-        Adicionar Boleia
-    </a>
+            @if (auth()->user()->role == 'admin')
+                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">Adicionar Boleia</a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Recebidos</a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">Pedidos Solicitados</a>
+                <a href="{{ route('admin.messages') }}" class="btn btn-danger mb-3">Ver Mensagens dos Utilizadores</a>
 
-    <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
-        Pedidos Recebidos
-    </a>
-
-    <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
-        Pedidos Solicitados
-    </a>
-
-    <a href="{{ route('admin.messages') }}" class="btn btn-danger mb-3">
-        Ver Mensagens dos Utilizadores
-    </a>
-
-
-
-                {{-- DRIVER: 2 botões --}}
             @elseif (auth()->user()->role == 'driver')
-                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
-                    Adicionar Boleia
-                </a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
-                    Pedidos Recebidos
-                </a>
+                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">Adicionar Boleia</a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Recebidos</a>
 
-                {{-- PASSENGER: 1 botão --}}
             @elseif (auth()->user()->role == 'passenger')
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
-                    Pedidos Solicitados
-                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Solicitados</a>
             @endif
         @endauth
-
 
         {{-- ALERTAS --}}
         @if (session('success'))
@@ -72,14 +50,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
+
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        {{-- TABELA BOLEIAS --}}
+        {{-- LISTA DE BOLEIAS --}}
         <div class="row">
 
             @forelse($rides as $ride)
+
                 @php
                     $myRequest = $ride->rideRequests
                         ->where('passenger_id', auth()->id())
@@ -94,8 +74,7 @@
                         <div class="ride-card-header">
                             <div class="d-flex align-items-center gap-2">
                                 <img src="{{ $ride->driver->photo ? asset('storage/' . $ride->driver->photo) : asset('images/nophoto.png') }}"
-                                    class="ride-avatar">
-
+                                     class="ride-avatar">
                                 <strong>{{ $ride->driver->name }}</strong>
                             </div>
 
@@ -111,9 +90,7 @@
                         {{-- BODY --}}
                         <div class="ride-card-body">
                             <p class="fw-semibold mb-2">
-                                📍 {{ $ride->pickup_location }}
-                                <span class="mx-1">→</span>
-                                {{ $ride->destination_location }}
+                                📍 {{ $ride->pickup_location }} → {{ $ride->destination_location }}
                             </p>
 
                             <p class="mb-1">
@@ -124,8 +101,6 @@
                             <span class="badge bg-primary">
                                 👥 {{ $ride->available_seats }} / {{ $ride->total_seats }} lugares
                             </span>
-
-
                         </div>
 
                         {{-- FOOTER --}}
@@ -133,28 +108,24 @@
 
                             {{-- MOTORISTA --}}
                             @if (auth()->id() === $ride->driver_id)
-                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info">
-                                    Ver
-                                </a>
+                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info">Ver</a>
 
-                                {{-- PASSAGEIRO --}}
+                            {{-- PASSAGEIRO --}}
                             @elseif (auth()->user()->role === 'passenger')
-                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">
-                                    Ver boleia
-                                </a>
+                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">Ver boleia</a>
+
+                            {{-- ADMIN --}}
+                            @elseif (auth()->user()->role === 'admin')
+                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver detalhes</a>
                             @endif
 
-                            {{-- botao teams --}}
-
+                            {{-- TEAMS --}}
                             @if ($myRequest && $myRequest->teams_link)
                                 <a href="{{ $myRequest->teams_link }}" target="_blank"
-                                    title="Abrir reunião no Microsoft Teams" class="teams-btn mt-2">
-
-                                    <i class="bi bi-microsoft-teams"> Teams</i>
-
+                                   class="teams-btn mt-2" title="Abrir reunião no Microsoft Teams">
+                                    <i class="bi bi-microsoft-teams"></i> Teams
                                 </a>
                             @endif
-
 
                         </div>
                     </div>
@@ -163,22 +134,16 @@
             @empty
                 <div class="col-12 text-center py-5">
                     <i class="bi bi-car-front fs-1 text-muted"></i>
-                    <h5 class="mt-3 text-muted">
-                        Nenhuma boleia disponível
-                    </h5>
-                    @if (Auth::user()->role != 'driver' && auth()->user()->pickup_location == '')
-                        <div class="alert alert-danger"">
-                            <h5>
-                                <i>
-                                'Atenção: preencha ponto de partida no perfil!' </i>
-                            </h5>
+                    <h5 class="mt-3 text-muted">Nenhuma boleia disponível</h5>
+
+                    @if (auth()->user()->role != 'driver' && auth()->user()->pickup_location == '')
+                        <div class="alert alert-danger mt-3">
+                            <i>Atenção: preencha o ponto de partida no perfil!</i>
                         </div>
                     @endif
                 </div>
-        </div>
-        @endforelse
+            @endforelse
 
-    </div>
-
-    </div>
+        </div> {{-- row --}}
+    </div> {{-- container --}}
 @endsection

@@ -154,70 +154,71 @@
                             <div class="card-header">
                                 Pedidos recebidos
                             </div>
-                         <div class="card-body">
-    @forelse ($requests as $request)
-        <div class="row mb-3 p-2 border-bottom">
-            {{-- PASSAGEIRO (ESQUERDA) --}}
-            <div class="col-md-5">
-                <h6>{{ $request->passenger->name ?? 'N/A' }}</h6>
-                <p id="card-email-passenger" class="text-muted">
-                    {{ $request->passenger->email ?? 'N/A' }}
-                </p>
-            </div>
+                            <div class="card-body">
+                                @forelse ($requests as $request)
+                                    <div class="row mb-3 p-2 border-bottom">
+                                        {{-- PASSAGEIRO (ESQUERDA) --}}
+                                        <div class="col-md-5">
+                                            <h6>{{ $request->passenger->name ?? 'N/A' }}</h6>
+                                            <p id="card-email-passenger" class="text-muted">
+                                                {{ $request->passenger->email ?? 'N/A' }}
+                                            </p>
+                                        </div>
 
-            {{-- STATUS CENTRALIZADO --}}
-            <div class="col-md-2 text-center">
-                <span class="badge fs-8
+                                        {{-- STATUS CENTRALIZADO --}}
+                                        <div class="col-md-2 text-center">
+                                            <span
+                                                class="badge fs-8
                     @if ($request->status === 'pending') bg-warning
                     @elseif ($request->status === 'accepted') bg-success
                     @else bg-danger @endif">
-                    {{ ucfirst($request->status) }}
-                </span>
-            </div>
+                                                {{ ucfirst($request->status) }}
+                                            </span>
+                                        </div>
 
-            {{-- BOTÕES (DIREITA) --}}
-            <div class="col-md-5 text-end">
-                {{-- STATUS (já foi mostrado acima, removido daqui) --}}
-                <div>
-                    {{-- BOTÕES MOTORISTA (SÓ PENDING) --}}
-                    @if ($request->status === 'pending')
-                        <div class="btn-group btn-group-sm gap-2" role="group">
-                            <form method="POST"
-                                  action="{{ route('ride_requests.accept', $request->id) }}"
-                                  class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="fas fa-check"></i> Aceitar
-                                </button>
-                            </form>
-                            <form method="POST"
-                                  action="{{ route('ride_requests.reject', $request->id) }}"
-                                  class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Rejeitar {{ $request->passenger->name ?? '' }}?')">
-                                    <i class="fas fa-times"></i> Rejeitar
-                                </button>
-                            </form>
-                        </div>
-                    @endif
+                                        {{-- BOTÕES (DIREITA) --}}
+                                        <div class="col-md-5 text-end">
+                                            {{-- STATUS (já foi mostrado acima, removido daqui) --}}
+                                            <div>
+                                                {{-- BOTÕES MOTORISTA (SÓ PENDING) --}}
+                                                @if ($request->status === 'pending')
+                                                    <div class="btn-group btn-group-sm gap-2" role="group">
+                                                        <form method="POST"
+                                                            action="{{ route('ride_requests.accept', $request->id) }}"
+                                                            class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-check"></i> Aceitar
+                                                            </button>
+                                                        </form>
+                                                        <form method="POST"
+                                                            action="{{ route('ride_requests.reject', $request->id) }}"
+                                                            class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Rejeitar {{ $request->passenger->name ?? '' }}?')">
+                                                                <i class="fas fa-times"></i> Rejeitar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endif
 
-                    {{-- TEAMS (SÓ ACEITO) --}}
-                    @if ($request->status === 'accepted' && $request->teams_link)
-                        <a href="{{ $request->teams_link }}" target="_blank"
-                           class="teams-btn mt-2">
-                            <i class="bi bi-microsoft-teams"> Teams</i>
-                        </a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    @empty
-        <div class="text-center text-muted py-4">
-            <p>Nenhum pedido de boleia recebido.</p>
-        </div>
-    @endforelse
-</div>
+                                                {{-- TEAMS (SÓ ACEITO) --}}
+                                                @if ($request->status === 'accepted' && $request->teams_link)
+                                                    <a href="{{ $request->teams_link }}" target="_blank"
+                                                        class="teams-btn mt-2">
+                                                        <i class="bi bi-microsoft-teams"> Teams</i>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-center text-muted py-4">
+                                        <p>Nenhum pedido de boleia recebido.</p>
+                                    </div>
+                                @endforelse
+                            </div>
 
                         </div>
                     </div>
@@ -225,47 +226,77 @@
             @endif
         @endauth
 
-        {{-- INFO PASSAGEIRO (ACEITO) --}}
-        @if (auth()->check() && isset($pedido) && $pedido->status === 'accepted')
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6 col-lg-5">
+        {{-- INFO DO PEDIDO ACEITE --}}
+@php
+    $user = auth()->user();
 
-                    <div class="ride-card accepted-card">
+    // MOTORISTA e ADMIN → podem ver qualquer passageiro aceite
+    if ($user->role === 'driver' || $user->role === 'admin') {
+        $pedidoAceito = $ride->rideRequests->where('status', 'accepted')->first();
+    }
 
-                        {{-- HEADER --}}
-                        <div class="ride-card-header bg-success text-white">
-                            <strong>  ✔ Pedido Aceito  </strong>
-                        </div>
+    // PASSAGEIRO → só vê o próprio pedido aceite
+    if ($user->role === 'passenger') {
+        $pedidoAceito = $ride->rideRequests
+            ->where('passenger_id', $user->id)
+            ->where('status', 'accepted')
+            ->first();
+    }
+@endphp
 
-                        {{-- BODY --}}
-                        <div class="ride-card-body">
+@if ($pedidoAceito)
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6 col-lg-5">
 
-                            <p class="mb-1">
-                                👤 <strong>Motorista:</strong> {{ $ride->driver->name }}
-                            </p>
+            <div class="ride-card accepted-card">
 
-                            <p class="mb-1">
-                                📧 <small>Email:</small> {{ $ride->driver->email }}
-                            </p>
+                <div class="ride-card-header bg-success text-white">
+                    <strong>✔ Pedido Aceite</strong>
+                </div>
 
-                            <p class="mb-2">
-                                📞 <strong>Telefone:</strong>
-                                {{ $ride->driver->phone ?? 'Não disponível' }}
-                            </p>
+                <div class="ride-card-body">
 
-                            @if ($pedido->teams_link)
-                                <a href="{{ $pedido->teams_link }}" target="_blank" class="teams-btn mt-2">
-                                     <i class="bi bi-microsoft-teams"> Teams</i>
-                                </a>
-                            @endif
+                    {{-- MOTORISTA E ADMIN VEEM O PASSAGEIRO --}}
+                    @if ($user->role !== 'passenger')
+                        <p class="mb-1">
+                            👤 <strong>Passageiro:</strong> {{ $pedidoAceito->passenger->name }}
+                        </p>
+                        <p class="mb-1">
+                            📧 {{ $pedidoAceito->passenger->email }}
+                        </p>
+                        <p class="mb-1">
+                            📞 {{ $pedidoAceito->passenger->phone ?? 'Não disponível' }}
+                        </p>
+                    @endif
 
-                        </div>
+                    {{-- PASSAGEIRO VÊ APENAS O MOTORISTA --}}
+                    @if ($user->role === 'passenger')
+                        <p class="mb-1">
+                            👤 <strong>Motorista:</strong> {{ $ride->driver->name }}
+                        </p>
+                        <p class="mb-1">
+                            📧 {{ $ride->driver->email }}
+                        </p>
+                        <p class="mb-1">
+                            📞 {{ $ride->driver->phone ?? 'Não disponível' }}
+                        </p>
+                    @endif
 
-                    </div>
+                    @if ($pedidoAceito->teams_link)
+                        <a href="{{ $pedidoAceito->teams_link }}" target="_blank" class="teams-btn mt-2">
+                            <i class="bi bi-microsoft-teams"></i> Teams
+                        </a>
+                    @endif
 
                 </div>
+
             </div>
-        @endif
+
+        </div>
+    </div>
+@endif
+
+
 
         {{-- INFO PASSAGEIRO (REJEITADO) --}}
         @if (auth()->check() && isset($rejeitado) && $rejeitado->status === 'rejected')
@@ -289,6 +320,7 @@
                             <p class="mb-3 text-muted">
                                 <i class="fas fa-info-circle"></i> Não é possível pedir novamente para esta boleia.
                             </p>
+                            
 
                             <p class="mb-2">
                                 <strong>Próximas ações:</strong>
