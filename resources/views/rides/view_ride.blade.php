@@ -118,7 +118,7 @@
                     <div class="card-header">Pedidos recebidos</div>
                     <div class="card-body">
                         @forelse ($requests as $request)
-                          
+
                             <div class="row mb-3 p-2 border-bottom">
                                 {{-- PASSAGEIRO --}}
                                 <div class="col-md-5">
@@ -180,27 +180,75 @@
 @endauth
 
 
-        {{-- INFO PASSAGEIRO ACEITO --}}
-        @if (auth()->check() && isset($pedido) && $pedido->status === 'accepted')
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6 col-lg-5">
-                    <div class="ride-card accepted-card">
-                        <div class="ride-card-header bg-success text-white">
-                            <strong>✔ Pedido Aceito</strong>
-                        </div>
-                        <div class="ride-card-body">
-                            <p class="mb-1">👤 <strong>Motorista:</strong> {{ $ride->driver->name }}</p>
-                            <p class="mb-1">📧 <small>Email:</small> {{ $ride->driver->email }}</p>
-                            @if ($pedido->teams_link)
-                                <a href="{{ $pedido->teams_link }}" target="_blank" class="teams-btn mt-2">
-                                    <i class="bi bi-microsoft-teams"> Teams</i>
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+        {{-- INFO DO PEDIDO ACEITE --}}
+@php
+    $user = auth()->user();
+
+    // MOTORISTA e ADMIN → podem ver qualquer passageiro aceite
+    if ($user->role === 'driver' || $user->role === 'admin') {
+        $pedidoAceito = $ride->rideRequests->where('status', 'accepted')->first();
+    }
+
+    // PASSAGEIRO → só vê o próprio pedido aceite
+    if ($user->role === 'passenger') {
+        $pedidoAceito = $ride->rideRequests
+            ->where('passenger_id', $user->id)
+            ->where('status', 'accepted')
+            ->first();
+    }
+@endphp
+
+@if ($pedidoAceito)
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="ride-card accepted-card">
+
+                <div class="ride-card-header bg-success text-white">
+                    <strong>✔ Pedido Aceite</strong>
                 </div>
+
+                <div class="ride-card-body">
+
+                    {{-- MOTORISTA E ADMIN VEEM O PASSAGEIRO --}}
+                    @if ($user->role !== 'passenger')
+                        <p class="mb-1">
+                            👤 <strong>Passageiro:</strong> {{ $pedidoAceito->passenger->name }}
+                        </p>
+                        <p class="mb-1">
+                            📧 {{ $pedidoAceito->passenger->email }}
+                        </p>
+                        <p class="mb-1">
+                            📞 {{ $pedidoAceito->passenger->phone ?? 'Não disponível' }}
+                        </p>
+                    @endif
+
+                    {{-- PASSAGEIRO VÊ APENAS O MOTORISTA --}}
+                    @if ($user->role === 'passenger')
+                        <p class="mb-1">
+                            👤 <strong>Motorista:</strong> {{ $ride->driver->name }}
+                        </p>
+                        <p class="mb-1">
+                            📧 {{ $ride->driver->email }}
+                        </p>
+                        <p class="mb-1">
+                            📞 {{ $ride->driver->phone ?? 'Não disponível' }}
+                        </p>
+                    @endif
+
+                    @if ($pedidoAceito->teams_link)
+                        <a href="{{ $pedidoAceito->teams_link }}" target="_blank" class="teams-btn mt-2">
+                            <i class="bi bi-microsoft-teams"></i> Teams
+                        </a>
+                    @endif
+
+                </div>
+
             </div>
-        @endif
+
+        </div>
+    </div>
+@endif
 
         {{-- INFO PASSAGEIRO REJEITADO --}}
         @if (auth()->check() && isset($rejeitado) && $rejeitado->status === 'rejected')

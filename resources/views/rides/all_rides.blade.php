@@ -246,6 +246,12 @@
                                 @endif
                             @endif
 
+                              {{-- ADMIN --}}
+                            @if (auth()->user()->role === 'admin')
+<a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver                                 detalhes</a>
+                            @endif
+
+
                             {{-- botão Teams (quando passageiro tem pedido com link) --}}
                             @if ($myRequest && $myRequest->teams_link)
                                 <a href="{{ $myRequest->teams_link }}" target="_blank"
