@@ -13,165 +13,175 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+
     <!-- CSS Global -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-    <!-- CSS Home (específico da página) -->
+    <!-- CSS Home -->
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
-
-
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-cesae">
-        <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-cesae">
+    <div class="container-fluid">
 
-            {{-- LOGO --}}
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('images/logo-cesae-white.png') }}" alt="CESAE Boleias" class="logo-header">
-            </a>
+        {{-- LOGO --}}
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="{{ asset('images/logo-cesae-white.png') }}" alt="CESAE Boleias" class="logo-header">
+        </a>
 
-            {{-- TOGGLER --}}
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        {{-- TOGGLER --}}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            {{-- MENU --}}
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {{-- MENU --}}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                {{-- LINKS CENTRAIS --}}
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-main">
+            {{-- LINKS CENTRAIS (DESKTOP) --}}
+            <ul class="navbar-nav mx-auto nav-main d-none d-lg-flex">
 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('como-funciona') ? 'active' : '' }}" href="/como-funciona">
+                        Como Funciona
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('contactos') ? 'active' : '' }}" href="/contactos">
+                        Contactos
+                    </a>
+                </li>
+
+                @auth
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">
-                            Home
+                        <a class="nav-link {{ request()->is('rides*') ? 'active' : '' }}"
+                           href="{{ route('rides.all') }}">
+                            Boleias
                         </a>
                     </li>
+                @endauth
+            </ul>
 
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('como-funciona') ? 'active' : '' }}" href="/como-funciona">
-                            Como Funciona
-                        </a>
-                    </li>
+            {{-- ADMIN / NOME (DESKTOP) --}}
+            <ul class="navbar-nav nav-main d-none d-lg-flex">
 
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('contactos') ? 'active' : '' }}" href="/contactos">
-                            Contactos
-                        </a>
-                    </li>
-
-                    @auth
+                @auth
+                    @if (Auth::user()->role === 'admin')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->is('rides*') ? 'active' : '' }}"
-                                href="{{ route('rides.all') }}">
-                                Boleias
+                            <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}"
+                               href="{{ route('users.all') }}">
+                                Área de Administração
                             </a>
-                        </li>
-                    @endauth
-
-                </ul>
-
-                {{-- LINKS À DIREITA --}}
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-main">
-
-                    @auth
-                        @if (Auth::user()->role === 'admin')
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}"
-                                    href="{{ route('users.all') }}">
-                                    Área de Administração
-                                </a>
-                            </li>
-                        @else
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#">
-                                    Olá, {{ Auth::user()->name }}
-                                </a>
-                            </li>
-                        @endif
-                    @endauth
-
-                </ul>
-
-
-                {{-- USER AREA --}}
-                <ul class="navbar-nav user-area">
-                    @auth
-                        <li class="nav-item dropdown user-dropdown">
-                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown"
-                                role="button" aria-expanded="false">
-
-
-                                {{-- AVATAR --}}
-                                <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/nophoto.png') }}"
-                                    alt="Foto de perfil" class="user-avatar">
-
-                            </a>
-
-                            {{-- DROPDOWN --}}
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
-                                <li class="dropdown-header">
-                                    {{ Auth::user()->name }}
-                                </li>
-
-                                <li>
-                                    <a href="{{ route('users.view', Auth::id()) }}" class="dropdown-item dropdown-link">
-                                        <span>Perfil</span>
-                                        <span class="dropdown-arrow">›</span>
-                                    </a>
-                                </li>
-
-
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-
-                                <li>
-                                    <form action="{{ route('logout') }}" method="post">
-                                        @csrf
-                                        <button class="dropdown-item text-danger">
-                                            Terminar sessão
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
                         </li>
                     @else
-                        <li class="nav-item dropdown user-dropdown">
-                            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown"
-                                role="button" aria-expanded="false">
-
-                                <img src="{{ asset('images/nophoto.png') }}" alt="Utilizador" class="user-avatar">
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
-                                <li>
-                                    <a href="{{ route('login') }}" class="dropdown-item dropdown-link">
-                                        <span>Iniciar Sessão</span>
-                                        <span class="dropdown-arrow">›</span>
-                                    </a>
-
-                                </li>
-                                <li>
-                                    <a href="{{ route('users.add') }}" class="dropdown-item dropdown-link">
-                                        <span>Criar Conta</span>
-                                        <span class="dropdown-arrow">›</span>
-                                    </a>
-
-                                </li>
-                            </ul>
+                        <li class="nav-item">
+                            <span class="nav-link disabled">
+                                Olá, {{ Auth::user()->name }}
+                            </span>
                         </li>
-                    @endauth
-                </ul>
+                    @endif
+                @endauth
+            </ul>
 
+            {{-- USER (DESKTOP) --}}
+            <ul class="navbar-nav user-area d-none d-lg-flex">
+                @auth
+                    <li class="nav-item dropdown user-dropdown">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+                            <img src="{{ Auth::user()->photo
+                                ? asset('storage/' . Auth::user()->photo)
+                                : asset('images/nophoto.png') }}"
+                                 class="user-avatar" alt="Perfil">
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-user-panel">
+                            <li class="dropdown-header">{{ Auth::user()->name }}</li>
+
+                            <li>
+                                <a href="{{ route('users.view', Auth::id()) }}"
+                                   class="dropdown-item dropdown-link">
+                                    <span>Perfil</span><span class="dropdown-arrow">›</span>
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button class="dropdown-item text-danger">
+                                        Terminar sessão
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endauth
+            </ul>
+
+            {{-- MENU MOBILE --}}
+            <div class="d-lg-none text-center mt-4">
+
+                <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Home</a>
+                <a href="/como-funciona" class="nav-link {{ request()->is('como-funciona') ? 'active' : '' }}">
+                    Como Funciona
+                </a>
+                <a href="/contactos" class="nav-link {{ request()->is('contactos') ? 'active' : '' }}">
+                    Contactos
+                </a>
+
+                @auth
+                    <a href="{{ route('rides.all') }}"
+                       class="nav-link {{ request()->is('rides*') ? 'active' : '' }}">
+                        Boleias
+                    </a>
+                @endauth
+
+                <hr class="navbar-divider">
+
+                @auth
+                    <img src="{{ Auth::user()->photo
+                        ? asset('storage/' . Auth::user()->photo)
+                        : asset('images/nophoto.png') }}"
+                         class="user-avatar mb-2">
+
+                    <p class="fw-semibold text-white">{{ Auth::user()->name }}</p>
+
+                    <a href="{{ route('users.view', Auth::id()) }}" class="nav-link">Perfil</a>
+
+                    @if (Auth::user()->role === 'admin')
+                        <a href="{{ route('users.all') }}" class="nav-link">Área de Administração</a>
+                    @endif
+
+                    <hr class="navbar-divider">
+
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="nav-link text-danger bg-transparent border-0">
+                            Terminar sessão
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="nav-link">Iniciar Sessão</a>
+                    <a href="{{ route('users.add') }}" class="nav-link">Criar Conta</a>
+                @endauth
             </div>
+
         </div>
-    </nav>
+    </div>
+</nav>
 
 
     <!-- CONTEÚDO -->
