@@ -37,7 +37,7 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('contact.store') }}">
+                        <form {{--method="POST" action=" {{ route('contact.store') }} --}}">
 
                             @csrf
 
@@ -82,7 +82,7 @@
                             </div>
 
                             {{-- BOTÃO --}}
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                            <button {{-- type="submit" --}} class="btn btn-primary w-100 py-2 fw-semibold">
 
                                 Enviar Mensagem
                             </button>

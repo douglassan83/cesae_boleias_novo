@@ -9,7 +9,7 @@
 
                 <h3 class="text-center mb-4">Criar Boleia CESAE</h3>
 
-                {{-- A PARTIR DAQUI é o TEU FORMULÁRIO ORIGINAL --}}
+                {{-- forms--}}
                 <form method="POST" action="{{ route('rides.store') }}">
                     @csrf
 

@@ -37,6 +37,8 @@ Route::view('/contactos', 'utils.contactos')->name('utils.contact');
 //rota para termos de responsabilidades e normas para confirmar antes do registo
 Route::get('/terms', [TermsController::class, 'terms'])->name('utils.terms');
 
+//pagina de mensagens (ADMIN)
+Route::view('/index', 'admin.index')->name('admin.messages');
 
 
 //ROTAS DO USER

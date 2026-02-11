@@ -62,12 +62,12 @@
 
             <!-- IMAGEM (ESQUERDA) -->
             <div class="why-image">
-                <img src="{{ asset('images/carpool.png') }}" alt="Porquê usar">
+                <img src="{{ asset('images/carpool.png') }}" alt="Por que usar">
             </div>
 
             <!-- TEXTO (DIREITA) -->
             <div class="why-text">
-                <h2>Porquê usar?</h2>
+                <h2>Por que usar?</h2>
 
                 <ul>
                     <li>Sustentabilidade</li>

@@ -26,7 +26,7 @@
 
         {{-- BOTÕES --}}
         @auth
-            {{-- ADMIN: vê 3 botões --}}
+            {{-- ADMIN: vê 4 botões --}}
             @if (auth()->user()->role == 'admin')
                 <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
                     Adicionar Boleia
@@ -36,6 +36,9 @@
                 </a>
                 <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
                     Pedidos da semana
+                </a>
+                <a href="{{ route('admin.messages') }}" class="btn btn-outline-dark mb-3">
+                    Mensagens
                 </a>
 
                 {{-- DRIVER: 2 botões --}}
@@ -73,6 +76,10 @@
                 @php
                     // pedido do utilizador autenticado (qualquer estado)
                     $myRequest = $ride->rideRequests->where('passenger_id', auth()->id())->first();
+
+                    // ADMIN VÊ TUDO: simula ser motorista E passageiro
+                    $isAdminSeeingAsDriver = auth()->user()->role == 'admin';
+                    $isAdminSeeingAsPassenger = auth()->user()->role == 'admin';
                 @endphp
 
                 <div class="col-md-6 col-lg-4 mb-4">
@@ -117,10 +124,9 @@
                                 👥 {{ $ride->available_seats }} / {{ $ride->total_seats }} lugares
                             </span>
 
-
-                            {{-- PEDIDOS RECEBIDOS (SÓ MOTORISTA VÊ) --}}
+                            {{-- PEDIDOS RECEBIDOS (SÓ MOTORISTA VÊ - AGORA ADMIN TAMBÉM) --}}
                             @auth
-                                @if (auth()->id() === $ride->driver_id)
+                                @if (auth()->id() === $ride->driver_id || $isAdminSeeingAsDriver)
                                     @php
                                         $pedidos = $ride->rideRequests()->latest()->get();
                                         $ultimos = []; // reset para esta boleia
@@ -173,23 +179,19 @@
                                 @endif
                             @endauth
 
-
-
-
-
-                            {{-- INFO DE PEDIDOS PARA PASSAGEIRO NESTE CARD --}}
+                            {{-- INFO DE PEDIDOS PARA PASSAGEIRO NESTE CARD - AGORA ADMIN TAMBÉM VÊ --}}
                             @auth
-                                @if (auth()->user()->role === 'passenger')
+                                @if ((auth()->user()->role === 'passenger' /* || $isAdminSeeingAsPassenger */))
                                     @if ($myRequest)
                                         <div class="mt-2 p-2 bg-light rounded">
                                             <small class="text-muted">
                                                 <strong>📬 Pedidos:</strong>
                                                 <span
                                                     class="badge ms-2
-                        @if ($myRequest->status === 'pending') bg-warning text-dark
-                        @elseif ($myRequest->status === 'accepted') bg-success
-                        @elseif ($myRequest->status === 'rejected') bg-danger
-                        @else bg-secondary @endif">
+                            @if ($myRequest->status === 'pending') bg-warning text-dark
+                            @elseif ($myRequest->status === 'accepted') bg-success
+                            @elseif ($myRequest->status === 'rejected') bg-danger
+                            @else bg-secondary @endif">
                                                     @if ($myRequest->status === 'pending')
                                                         Pedido enviado com sucesso
                                                     @elseif ($myRequest->status === 'accepted')
@@ -213,21 +215,19 @@
                                 @endif
                             @endauth
 
-
-
                         </div>
 
                         {{-- FOOTER --}}
                         <div class="ride-card-footer">
 
-                            {{-- MOTORISTA --}}
-                            @if (auth()->id() === $ride->driver_id)
+                            {{-- MOTORISTA - --}}
+                            @if (auth()->id() === $ride->driver_id /* || $isAdminSeeingAsDriver */)
                                 <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info">
                                     Ver boleia
                                 </a>
 
                                 {{-- PASSAGEIRO --}}
-                            @elseif (auth()->user()->role === 'passenger')
+                            @elseif ((auth()->user()->role === 'passenger') /* || $isAdminSeeingAsPassenger */)
                                 @if ($myRequest)
                                     {{-- já existe pedido para esta boleia --}}
                                     <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-warning">
@@ -246,19 +246,18 @@
                                 @endif
                             @endif
 
-                              {{-- ADMIN --}}
+                            {{-- ADMIN --}}
                             @if (auth()->user()->role === 'admin')
-<a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver                                 detalhes</a>
+                            <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver detalhes</a>
                             @endif
 
-
                             {{-- botão Teams (quando passageiro tem pedido com link) --}}
-                            @if ($myRequest && $myRequest->teams_link)
+                            {{-- @if ($myRequest && $myRequest->teams_link)
                                 <a href="{{ $myRequest->teams_link }}" target="_blank"
                                     title="Abrir reunião no Microsoft Teams" class="teams-btn mt-2">
                                     <i class="bi bi-microsoft-teams"> Teams</i>
                                 </a>
-                            @endif
+                            @endif --}}
 
                         </div>
                     </div>

@@ -190,13 +190,13 @@
                                         </small>
                                     </div>
 
-                                    {{-- TEAMS --}}
+                                    {{-- {{-- TEAMS
                                     @if ($request->status === 'accepted' && $request->teams_link)
                                         <a href="{{ $request->teams_link }}" target="_blank"
                                            class="teams-btn mt-2">
                                             <i class="bi bi-microsoft-teams"> Teams</i>
                                         </a>
-                                    @endif
+                                    @endif --}}
                                 </div>
 
                                 {{-- FOOTER --}}
