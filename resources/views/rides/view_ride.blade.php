@@ -36,6 +36,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div class="ride-card">
+
                     {{-- HEADER --}}
                     <div class="ride-card-header">
                         <div class="d-flex align-items-center gap-2">
@@ -71,17 +72,18 @@
 
                     {{-- FOOTER --}}
                     <div class="ride-card-footer">
-                        {{-- PASSAGEIRO --}}
                         @auth
                             @if (auth()->id() !== $ride->driver_id)
                                 @if ($rejeitado)
                                     <button class="btn btn-danger btn-sm" disabled>❌ Pedido recusado</button>
+
                                 @elseif (!$pedido && $ride->status === 'active' && $ride->available_seats > 0)
                                     <form method="POST" action="{{ route('rides.request') }}">
                                         @csrf
                                         <input type="hidden" name="ride_id" value="{{ $ride->id }}">
                                         <button class="btn btn-primary btn-sm">🚗 Pedir boleia</button>
                                     </form>
+
                                 @elseif ($pedido)
                                     <form method="POST" action="{{ route('ride_requests.cancel', $pedido->id) }}">
                                         @csrf @method('DELETE')
@@ -92,9 +94,11 @@
                         @endauth
 
                         <a href="{{ route('rides.all') }}" class="btn btn-secondary btn-sm">← Voltar</a>
+
                         @auth
                             @if (auth()->id() === $ride->driver_id)
                                 <a href="{{ route('rides.edit', $ride->id) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
+
                                 <form action="{{ route('rides.delete', $ride->id) }}" method="POST" class="d-inline"
                                       onsubmit="return confirm('Excluir esta boleia?')">
                                     @csrf @method('DELETE')
@@ -103,152 +107,141 @@
                             @endif
                         @endauth
                     </div>
+
                 </div>
             </div>
         </div>
 
-        {{-- SUBCARD PASSAGEIROS (SÓ MOTORISTA) --}}
-@auth
-    @if (auth()->id() === $ride->driver_id)
-        @php $requests = $ride->rideRequests()->with('passenger:id,name,photo,email')->get(); @endphp
+        {{-- SUBCARD PASSAGEIROS (SÓ MOTORISTA e ADMIN) --}}
+        @auth
+            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'driver')
 
-        <div class="row justify-content-center mt-4">
-            <div class="col-md-6 col-lg-5">
-                <div class="card">
-                    <div class="card-header">Pedidos recebidos</div>
-                    <div class="card-body">
-                        @forelse ($requests as $request)
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="card">
+                            <div class="card-header">Pedidos recebidos</div>
+                            <div class="card-body">
 
-                            <div class="row mb-3 p-2 border-bottom">
-                                {{-- PASSAGEIRO --}}
-                                <div class="col-md-5">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <img src="{{ $request->passenger->photo ? asset('storage/' . $request->passenger->photo) : asset('images/nophoto.png') }}"
-                                             class="rounded-circle" style="width: 45px; height: 45px;">
-                                        <h6 class="mb-1">{{ $request->passenger->name ?? 'N/A' }}</h6>
-                                    </div>
-                                    {{-- EMAIL TOTAL LARGURA --}}
-                                    <div style="width: 100%;">
-                                        <small class="text-muted d-block">{{ $request->passenger->email ?? 'N/A' }}</small>
-                                    </div>
-                                </div>
+                                @forelse ($requests as $request)
+                                    <div class="row mb-3 p-2 border-bottom">
 
-                                {{-- STATUS --}}
-                                <div class="col-md-2 text-center">
-                                    <span class="badge fs-8
-                                        @if ($request->status === 'pending') bg-warning
-                                        @elseif ($request->status === 'accepted') bg-success
-                                        @else bg-danger @endif">
-                                        {{ ucfirst($request->status) }}
-                                    </span>
-                                </div>
+                                        {{-- PASSAGEIRO --}}
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <img src="{{ $request->passenger->photo ? asset('storage/' . $request->passenger->photo) : asset('images/nophoto.png') }}"
+                                                     class="rounded-circle" style="width: 45px; height: 45px;">
+                                                <h6 class="mb-1">{{ $request->passenger->name ?? 'N/A' }}</h6>
+                                            </div>
 
-                                {{-- BOTÕES --}}
-                                <div class="col-md-5 text-end">
-                                    @if ($request->status === 'pending')
-                                        <div class="btn-group btn-group-sm gap-2">
-                                            <form method="POST" action="{{ route('ride_requests.accept', $request->id) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-success btn-sm">Aceitar</button>
-                                            </form>
-                                            <form method="POST" action="{{ route('ride_requests.reject', $request->id) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Rejeitar {{ $request->passenger->name ?? '' }}?')">
-                                                    Rejeitar
-                                                </button>
-                                            </form>
+                                            <div style="width: 100%;">
+                                                <small class="text-muted d-block">{{ $request->passenger->email ?? 'N/A' }}</small>
+                                            </div>
                                         </div>
-                                    @endif
-                                    @if ($request->status === 'accepted' && $request->teams_link)
-                                        <a href="{{ $request->teams_link }}" target="_blank" class="teams-btn mt-2 d-block">
-                                            <i class="bi bi-microsoft-teams"> Teams</i>
-                                        </a>
-                                    @endif
-                                </div>
+
+                                        {{-- STATUS --}}
+                                        <div class="col-md-2 text-center">
+                                            <span class="badge fs-8
+                                                @if ($request->status === 'pending') bg-warning
+                                                @elseif ($request->status === 'accepted') bg-success
+                                                @else bg-danger @endif">
+                                                {{ ucfirst($request->status) }}
+                                            </span>
+                                        </div>
+
+                                        {{-- BOTÕES --}}
+                                        <div class="col-md-5 text-end">
+                                            @if ($request->status === 'pending')
+                                                <div class="btn-group btn-group-sm gap-2">
+                                                    <form method="POST" action="{{ route('ride_requests.accept', $request->id) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success btn-sm">Aceitar</button>
+                                                    </form>
+
+                                                    <form method="POST" action="{{ route('ride_requests.reject', $request->id) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Rejeitar {{ $request->passenger->name ?? '' }}?')">
+                                                            Rejeitar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @endif
+
+                                            @if ($request->status === 'accepted' && $request->teams_link)
+                                                <a href="{{ $request->teams_link }}" target="_blank" class="teams-btn mt-2">
+                                                    <i class="bi bi-microsoft-teams"></i> Teams
+                                                </a>
+                                            @endif
+                                        </div>
+
+                                    </div>
+                                @empty
+                                    <div class="text-center text-muted py-4">
+                                        <p>Nenhum pedido de boleia recebido.</p>
+                                    </div>
+                                @endforelse
+
                             </div>
-                        @empty
-                            <div class="text-center text-muted py-4">
-                                <p>Nenhum pedido de boleia recebido.</p>
-                            </div>
-                        @endforelse
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    @endif
-@endauth
 
+            @endif
+        @endauth
 
         {{-- INFO DO PEDIDO ACEITE --}}
-@php
-    $user = auth()->user();
+        @php
+            $user = auth()->user();
 
-    // MOTORISTA e ADMIN → podem ver qualquer passageiro aceite
-    if ($user->role === 'driver' || $user->role === 'admin') {
-        $pedidoAceito = $ride->rideRequests->where('status', 'accepted')->first();
-    }
+            if ($user->role === 'driver' || $user->role === 'admin') {
+                $pedidoAceito = $ride->rideRequests->where('status', 'accepted')->first();
+            }
 
-    // PASSAGEIRO → só vê o próprio pedido aceite
-    if ($user->role === 'passenger') {
-        $pedidoAceito = $ride->rideRequests
-            ->where('passenger_id', $user->id)
-            ->where('status', 'accepted')
-            ->first();
-    }
-@endphp
+            if ($user->role === 'passenger') {
+                $pedidoAceito = $ride->rideRequests
+                    ->where('passenger_id', $user->id)
+                    ->where('status', 'accepted')
+                    ->first();
+            }
+        @endphp
 
-@if ($pedidoAceito)
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6 col-lg-5">
+        @if ($pedidoAceito)
+            @if ($user->role !== 'driver')
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-6 col-lg-5">
 
-            <div class="ride-card accepted-card">
+                        <div class="ride-card accepted-card">
 
-                <div class="ride-card-header bg-success text-white">
-                    <strong>✔ Pedido Aceite</strong>
+                            <div class="ride-card-header bg-success text-white">
+                                <strong>✔ Pedido Aceite</strong>
+                            </div>
+
+                            <div class="ride-card-body">
+
+                                <p class="mb-1">
+                                    👤 <strong>Motorista:</strong> {{ $ride->driver->name }}
+                                </p>
+                                <p class="mb-1">
+                                    📧 {{ $ride->driver->email }}
+                                </p>
+                                <p class="mb-1">
+                                    📞 {{ $ride->driver->phone ?? 'Não disponível' }}
+                                </p>
+
+                                @if ($pedidoAceito->teams_link)
+                                    <a href="{{ $pedidoAceito->teams_link }}" target="_blank" class="teams-btn mt-2">
+                                        <i class="bi bi-microsoft-teams"></i> Teams
+                                    </a>
+                                @endif
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
-
-                <div class="ride-card-body">
-
-                    {{-- MOTORISTA E ADMIN VEEM O PASSAGEIRO --}}
-                    @if ($user->role !== 'passenger')
-                        <p class="mb-1">
-                            👤 <strong>Passageiro:</strong> {{ $pedidoAceito->passenger->name }}
-                        </p>
-                        <p class="mb-1">
-                            📧 {{ $pedidoAceito->passenger->email }}
-                        </p>
-                        <p class="mb-1">
-                            📞 {{ $pedidoAceito->passenger->phone ?? 'Não disponível' }}
-                        </p>
-                    @endif
-
-                    {{-- PASSAGEIRO VÊ APENAS O MOTORISTA --}}
-                    @if ($user->role === 'passenger')
-                        <p class="mb-1">
-                            👤 <strong>Motorista:</strong> {{ $ride->driver->name }}
-                        </p>
-                        <p class="mb-1">
-                            📧 {{ $ride->driver->email }}
-                        </p>
-                        <p class="mb-1">
-                            📞 {{ $ride->driver->phone ?? 'Não disponível' }}
-                        </p>
-                    @endif
-
-                    @if ($pedidoAceito->teams_link)
-                        <a href="{{ $pedidoAceito->teams_link }}" target="_blank" class="teams-btn mt-2">
-                            <i class="bi bi-microsoft-teams"></i> Teams
-                        </a>
-                    @endif
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-@endif
+            @endif
+        @endif
 
         {{-- INFO PASSAGEIRO REJEITADO --}}
         @if (auth()->check() && isset($rejeitado) && $rejeitado->status === 'rejected')
