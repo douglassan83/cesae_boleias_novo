@@ -244,29 +244,50 @@
         @endif
 
         {{-- INFO PASSAGEIRO REJEITADO --}}
-        @if (auth()->check() && isset($rejeitado) && $rejeitado->status === 'rejected')
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-6 col-lg-5">
-                    <div class="card border-danger">
-                        <div class="card-header bg-danger text-white">
-                            <strong>❌ Pedido Recusado</strong>
-                        </div>
-                        <div class="card-body">
-                            <p class="mb-2">Desculpe, o motorista recusou o teu pedido.</p>
-                            <p class="mb-3 text-muted">
-                                <i class="fas fa-info-circle"></i> Não é possível pedir novamente para esta boleia.
-                            </p>
-                            <p class="mb-2"><strong>Próximas ações:</strong></p>
-                            <ul class="mb-0">
-                                <li>Procura outras boleias disponíveis</li>
-                                <li>Contacta o suporte na área de contactos caso haja algum erro.</li>
-                                <li>Verifica o teu perfil completo para melhores resultados</li>
-                            </ul>
-                        </div>
+@if (auth()->check() && isset($rejeitado) && $rejeitado->status === 'rejected')
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <strong>❌ Pedido Recusado</strong>
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-2">Desculpe, o motorista recusou o teu pedido.</p>
+
+                    <p class="mb-3 text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        Não é possível pedir novamente para esta boleia — a menos que o suporte reverta a recusa.
+                    </p>
+
+                    {{-- NOVO BLOCO: Botão para contactar suporte --}}
+                    <div class="alert alert-warning">
+                        <p class="mb-1"><strong>Achas que foi um engano?</strong></p>
+                        <p class="mb-2">Podes pedir ao suporte para reverter esta recusa.</p>
+
+                        <form action="{{ route('ride.reversal.request') }}" method="POST">
+                            @csrf
+
+                            {{-- ID do pedido rejeitado --}}
+                            <input type="hidden" name="ride_request_id" value="{{ $rejeitado->id }}">
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Contactar Suporte
+                            </button>
+                        </form>
                     </div>
+
+                    <p class="mb-2"><strong>Próximas ações:</strong></p>
+                    <ul class="mb-0">
+                        <li>Procura outras boleias disponíveis</li>
+                        <li>Contacta o suporte caso haja algum erro</li>
+                        <li>Verifica o teu perfil completo para melhores resultados</li>
+                    </ul>
                 </div>
             </div>
-        @endif
+        </div>
+    </div>
+@endif
 
     </div>
 @endsection

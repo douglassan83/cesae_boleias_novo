@@ -72,6 +72,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/rides', [RideController::class, 'allRides'])->name('rides.all');
 });
 
+// ADMIN: listar pedidos de reversão
+Route::get('/admin/reversals', [RideController::class, 'adminReversals'])
+    ->name('admin.reversals')
+    ->middleware('auth');
+
 
 // rotas pedidos das boleias
 Route::middleware('auth')->group(function () {
@@ -104,6 +109,24 @@ Route::middleware('auth')->group(function () {
         ->name('ride_requests.reject');
 });
 
+
+// PASSAGEIRO: solicitar reversão de pedido recusado
+Route::post('/ride/reversal/request',
+    [RideController::class, 'requestReversal']
+)->name('ride.reversal.request')->middleware('auth');
+
+// ADMIN: aprovar reversão
+Route::post('/ride/reversal/approve/{id}',
+    [RideController::class, 'approveReversal']
+)->name('ride.reversal.approve')->middleware('auth');
+
+// ADMIN: rejeitar reversão
+Route::post('/ride/reversal/reject/{id}',
+    [RideController::class, 'rejectReversal']
+)->name('ride.reversal.reject')->middleware('auth');
+
+
+
 // Envio de mensagens
 Route::post('/contact/store', [ContactController::class, 'store'])->name('contact.store');
 
@@ -115,10 +138,6 @@ Route::get('/admin/messages', [ContactController::class, 'index'])
 Route::post('/admin/messages/{id}/resolve', [ContactController::class, 'resolve'])
     ->middleware(\App\Http\Middleware\IsAdmin::class)
     ->name('admin.messages.resolve');
-
-
-
-
 
 
 

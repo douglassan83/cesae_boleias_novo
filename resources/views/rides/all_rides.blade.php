@@ -3,7 +3,6 @@
     @php use App\Models\RideRequest; @endphp
 
     <div class="container mt-4 page-section">
-
         {{-- TÍTULO DINÂMICO POR ROLE --}}
         <h3 class="page-title mb-1">
             @if (auth()->user()->role == 'driver')
@@ -15,7 +14,6 @@
                 Todas as Boleias (Admin)
             @endif
         </h3>
-
         <p class="page-subtitle">
             @if (auth()->user()->role == 'driver')
                 Gere as tuas boleias ativas e responde aos pedidos.
@@ -28,18 +26,40 @@
 
         {{-- BOTÕES --}}
         @auth
+            {{-- ADMIN: vê 4 botões --}}
             @if (auth()->user()->role == 'admin')
-                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">Adicionar Boleia</a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Recebidos</a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">Pedidos Solicitados</a>
-                <a href="{{ route('admin.messages') }}" class="btn btn-danger mb-3">Ver Mensagens dos Utilizadores</a>
+                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
+                    Adicionar Boleia
+                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Boleias da Semana
+                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-warning mb-3">
+                    Pedidos da semana
+                </a>
+                <a href="{{ route('admin.messages') }}" class="btn btn-outline-dark mb-3">
+                    Mensagens
+                </a>
+                {{-- Link visível apenas para ADMIN --}}
+                <a href="{{ route('admin.reversals') }}" class="btn btn-outline-dark mb-3">
+                    Pedidos de Reversão
+                </a>
 
+
+                {{-- DRIVER: 2 botões --}}
             @elseif (auth()->user()->role == 'driver')
-                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">Adicionar Boleia</a>
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Recebidos</a>
+                <a href="{{ route('rides.add') }}" class="btn btn-success mb-3">
+                    Adicionar Boleia
+                </a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Boleias da semana
+                </a>
 
+                {{-- PASSENGER: 1 botão --}}
             @elseif (auth()->user()->role == 'passenger')
-                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">Pedidos Solicitados</a>
+                <a href="{{ route('rides.my_requests') }}" class="btn btn-primary mb-3">
+                    Pedidos da semana
+                </a>
             @endif
         @endauth
 
@@ -50,19 +70,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        {{-- LISTA DE BOLEIAS --}}
+        {{-- TABELA BOLEIAS --}}
         <div class="row">
 
             @forelse($rides as $ride)
-
                 @php
                     // pedido do utilizador autenticado (qualquer estado)
                     $myRequest = $ride->rideRequests->where('passenger_id', auth()->id())->first();
+
+                    // ADMIN VÊ TUDO: simula ser motorista E passageiro
+                    $isAdminSeeingAsDriver = auth()->user()->role == 'admin';
+                    $isAdminSeeingAsPassenger = auth()->user()->role == 'admin';
                 @endphp
 
                 <div class="col-md-6 col-lg-4 mb-4">
@@ -72,25 +94,34 @@
                         <div class="ride-card-header">
                             <div class="d-flex align-items-center gap-2">
                                 <img src="{{ $ride->driver->photo ? asset('storage/' . $ride->driver->photo) : asset('images/nophoto.png') }}"
-                                     class="ride-avatar">
+                                    class="ride-avatar">
+
                                 <strong>{{ $ride->driver->name }}</strong>
                             </div>
 
                             <h6>Boleia #{{ $ride->id }}</h6>
 
-                            @if ($ride->status === 'active')
+                            {{-- STATUS DA BOLEIA --}}
+                            @if ($ride->isExpired())
+                                <span class="badge bg-secondary">⏳ Expirada</span>
+                            @elseif ($ride->status === 'active')
                                 <span class="badge bg-success">🟢 Ativa</span>
                             @elseif ($ride->status === 'full')
                                 <span class="badge bg-secondary">🔴 Lotada</span>
                             @else
                                 <span class="badge bg-danger">❌ {{ ucfirst($ride->status) }}</span>
                             @endif
+
                         </div>
 
                         {{-- BODY --}}
                         <div class="ride-card-body">
                             <p class="fw-semibold mb-2">
-                                📍 {{ $ride->pickup_location }} → {{ $ride->destination_location }}
+                                <small>Origem:</small> {{ $ride->pickup_location }}
+                                <span class="mx-1"></span>
+                            </p>
+                            <p class="fw-semibold mb-2">
+                                <small>Destino: </small> {{ $ride->destination_location }}
                             </p>
 
                             <p class="mb-1">
@@ -102,10 +133,9 @@
                                 👥 {{ $ride->available_seats }} / {{ $ride->total_seats }} lugares
                             </span>
 
-
-                            {{-- PEDIDOS RECEBIDOS (SÓ MOTORISTA VÊ) --}}
+                            {{-- PEDIDOS RECEBIDOS (SÓ MOTORISTA VÊ - AGORA ADMIN TAMBÉM) --}}
                             @auth
-                                @if (auth()->id() === $ride->driver_id)
+                                @if (auth()->id() === $ride->driver_id || $isAdminSeeingAsDriver)
                                     @php
                                         $pedidos = $ride->rideRequests()->latest()->get();
                                         $ultimos = []; // reset para esta boleia
@@ -158,23 +188,19 @@
                                 @endif
                             @endauth
 
-
-
-
-
-                            {{-- INFO DE PEDIDOS PARA PASSAGEIRO NESTE CARD --}}
+                            {{-- INFO DE PEDIDOS PARA PASSAGEIRO NESTE CARD - AGORA ADMIN TAMBÉM VÊ --}}
                             @auth
-                                @if (auth()->user()->role === 'passenger')
+                                @if (auth()->user()->role === 'passenger' /* || $isAdminSeeingAsPassenger */)
                                     @if ($myRequest)
                                         <div class="mt-2 p-2 bg-light rounded">
                                             <small class="text-muted">
                                                 <strong>📬 Pedidos:</strong>
                                                 <span
                                                     class="badge ms-2
-                        @if ($myRequest->status === 'pending') bg-warning text-dark
-                        @elseif ($myRequest->status === 'accepted') bg-success
-                        @elseif ($myRequest->status === 'rejected') bg-danger
-                        @else bg-secondary @endif">
+                            @if ($myRequest->status === 'pending') bg-warning text-dark
+                            @elseif ($myRequest->status === 'accepted') bg-success
+                            @elseif ($myRequest->status === 'rejected') bg-danger
+                            @else bg-secondary @endif">
                                                     @if ($myRequest->status === 'pending')
                                                         Pedido enviado com sucesso
                                                     @elseif ($myRequest->status === 'accepted')
@@ -198,34 +224,19 @@
                                 @endif
                             @endauth
 
-
-
                         </div>
 
                         {{-- FOOTER --}}
                         <div class="ride-card-footer">
 
-                            {{-- MOTORISTA --}}
-                            @if (auth()->id() === $ride->driver_id)
-                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info">Ver</a>
+                            {{-- MOTORISTA - --}}
+                            @if (auth()->id() === $ride->driver_id /* || $isAdminSeeingAsDriver */)
                                 <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-info">
                                     Ver boleia
                                 </a>
 
-                            {{-- PASSAGEIRO --}}
-                            @elseif (auth()->user()->role === 'passenger')
-                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-primary">Ver boleia</a>
-
-                            {{-- ADMIN --}}
-                            @elseif (auth()->user()->role === 'admin')
-                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver detalhes</a>
-                            @endif
-
-                            {{-- TEAMS --}}
-                            @if ($myRequest && $myRequest->teams_link)
-                                <a href="{{ $myRequest->teams_link }}" target="_blank"
-                                   class="teams-btn mt-2" title="Abrir reunião no Microsoft Teams">
-                                    <i class="bi bi-microsoft-teams"></i> Teams
+                                {{-- PASSAGEIRO --}}
+                            @elseif (auth()->user()->role === 'passenger' /* || $isAdminSeeingAsPassenger */)
                                 @if ($myRequest)
                                     {{-- já existe pedido para esta boleia --}}
                                     <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-warning">
@@ -244,19 +255,18 @@
                                 @endif
                             @endif
 
-                              {{-- ADMIN --}}
+                            {{-- ADMIN --}}
                             @if (auth()->user()->role === 'admin')
-<a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver                                 detalhes</a>
+                                <a href="{{ route('rides.view', $ride->id) }}" class="btn btn-sm btn-dark">Ver detalhes</a>
                             @endif
 
-
                             {{-- botão Teams (quando passageiro tem pedido com link) --}}
-                            @if ($myRequest && $myRequest->teams_link)
+                            {{-- @if ($myRequest && $myRequest->teams_link)
                                 <a href="{{ $myRequest->teams_link }}" target="_blank"
                                     title="Abrir reunião no Microsoft Teams" class="teams-btn mt-2">
                                     <i class="bi bi-microsoft-teams"> Teams</i>
                                 </a>
-                            @endif
+                            @endif --}}
 
                         </div>
                     </div>
@@ -265,11 +275,6 @@
             @empty
                 <div class="col-12 text-center py-5">
                     <i class="bi bi-car-front fs-1 text-muted"></i>
-                    <h5 class="mt-3 text-muted">Nenhuma boleia disponível</h5>
-
-                    @if (auth()->user()->role != 'driver' && auth()->user()->pickup_location == '')
-                        <div class="alert alert-danger mt-3">
-                            <i>Atenção: preencha o ponto de partida no perfil!</i>
 
                     @if (Auth::user()->role != 'driver')
                         <h5 class="mt-3 text-muted">
@@ -303,6 +308,5 @@
 
         </div>
 
-        </div> {{-- row --}}
-    </div> {{-- container --}}
+    </div>
 @endsection

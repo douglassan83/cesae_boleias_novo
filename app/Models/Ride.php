@@ -59,4 +59,21 @@ class Ride extends Model
     return $this->hasMany(RideRequest::class, 'ride_id');
 }
 
+// Ride.php
+public function isExpired()
+{
+    try {
+        // Garantir que só existe UMA data
+        $date = trim(explode(' ', $this->departure_date)[0]);
+
+        $departure = \Carbon\Carbon::parse($date . ' ' . $this->departure_time);
+
+        return now()->greaterThanOrEqualTo($departure->subMinutes(10));
+
+    } catch (\Exception $e) {
+        return true; // Se der erro, considera expirada
+    }
+}
+
+
 }
