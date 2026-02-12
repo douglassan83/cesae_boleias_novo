@@ -650,3 +650,24 @@ footer hr {
     color: #adb5bd;
     font-weight: 400;
 }
+
+#login-header{
+    background-color: var(--color-primary);
+}
+#login-button{
+    background-color: var(--color-primary);
+
+}
+#register-button{
+    background-color: var(--color-primary);
+}
+
+#register-header{
+    background-color: var(--color-primary);
+}
+
+
+.form-control::placeholder {
+    color: #6c757d !important;  /* Cinza Bootstrap */
+    opacity: 0.3 !important;
+}
